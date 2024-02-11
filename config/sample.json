@@ -1,0 +1,16 @@
+{
+  "app": {
+    "port": 3000,
+    "debug": true
+  },
+  "db" : {
+    "host":"127.0.0.1",
+    "user": "",
+    "port": "3306",
+    "password": "",
+    "database": "reward_point"
+  },
+  "line":{
+    "liffId":""
+  }
+}

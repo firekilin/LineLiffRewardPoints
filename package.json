@@ -1,0 +1,48 @@
+{
+  "name": "savepoints",
+  "version": "1.0.0",
+  "description": "point save and use it",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firekilin/LineLiffRewardPoints.git"
+  },
+  "keywords": [
+    "line",
+    "liff",
+    "reward",
+    "points"
+  ],
+  "author": "icecubes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/firekilin/LineLiffRewardPoints/issues"
+  },
+  "homepage": "https://github.com/firekilin/LineLiffRewardPoints#readme",
+  "dependencies": {
+    "@line/bot-sdk": "^7.3.0",
+    "body-parser": "^1.19.0",
+    "bootstrap": "^5.0.2",
+    "bootstrap-icons": "^1.5.0",
+    "config": "^3.3.6",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.6",
+    "ejs-locals": "^1.0.2",
+    "express": "^4.17.1",
+    "express-mysql-session": "^2.1.7",
+    "express-session": "^1.17.2",
+    "jquery": "^3.6.0",
+    "jquery-ui-bundle": "^1.12.1-migrate",
+    "js-yaml": "^4.1.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0"
+  }
+}

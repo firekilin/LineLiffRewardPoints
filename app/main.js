@@ -1,0 +1,26 @@
+const router = require ('express').Router ();
+const points = require ('../dao/RewardPoints/index');
+const config = require ('config');
+
+
+const liffId = config.get ('line.liffId');
+
+//登入Line頁面 (首頁)
+router.get ('/', async(req, res) => {
+  res.render ('index');
+});
+
+//api liffId get
+router.get ('/send-id', async(req, res) => {
+  res.json ({ id: liffId });
+});
+
+
+//dev account
+router.get ('/dev', async(req, res) => {
+  res.json (config.get ('dev'));
+});
+
+
+
+module.exports = router;
