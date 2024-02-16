@@ -1,17 +1,38 @@
 const db = require ('../getDB');
 const query = db.query;
 
-// //Line登入確認
-exports.member = async(req, res) => {
+
+
+/** 建立卡片 */
+exports.createCard = async(req, res) => {
   try {
-    let check = await query ('select * from RP_CARD');
-    if (check[0] == null){
-      console.log (check[0]);
-    } 
-    return true;
+    let params = req.body;
+    console.log (params);
+    let check = await query (`INSERT INTO reward_point.card (
+      cardName, cardNum, cardPosition, cardExp, cardGift,
+      createUserno, createUser, modifyUserno, modifyUser
+      ) VALUES (
+      ?, ?, ?, ?, ?, ?, ?, ?, ?);`, [
+      params.cardName,
+      params.cardNum,
+      JSON.stringify (params.cardPosition),
+      params.cardExp,
+      params.cardGift,
+      req.session.userno,
+      req.session.user,
+      req.session.userno,
+      req.session.user
+    ]);
+    if (check){
+      return true;
+    } else {
+      return false;
+    }
   } catch (e){
     return false;
   }
 };
+
+//
 
 module.exports = exports;

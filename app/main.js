@@ -21,6 +21,12 @@ router.get ('/dev', async(req, res) => {
   res.json (config.get ('dev'));
 });
 
+//初次登入驗證保存
+router.post ('/login', async(req, res) => {
+  req.session.userno = req.body.userno;
+  req.session.user = req.body.user;
+  res.json ('完成');
+});
 
 
 module.exports = router;
