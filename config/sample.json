@@ -12,5 +12,11 @@
   },
   "line":{
     "liffId":""
+  },
+  "dev":{
+    "userId": "",
+    "displayName": "",
+    "statusMessage": "",
+    "pictureUrl": ""
   }
 }
