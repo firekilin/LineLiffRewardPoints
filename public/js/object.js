@@ -46,5 +46,6 @@ $ (document).ajaxComplete (function(){
 });
 
 
+loading.show ();
 
 
