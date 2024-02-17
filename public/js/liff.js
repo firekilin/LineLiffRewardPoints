@@ -103,11 +103,13 @@ function displayLiffData() {
           
           
       success: (jsonResponse) => {
+        $ ('#LineStatus').find ('.card-body').text (jsonResponse);
 
         alert (jsonResponse);
 
       }, error: (error) => {
-        console.log ('程式失敗 連線失敗');
+
+        alert (' 連線失敗');
       } 
     });
   
