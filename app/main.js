@@ -2,6 +2,7 @@ const router = require ('express').Router ();
 const points = require ('../dao/RewardPoints/index');
 const config = require ('config');
 const axios = require ('axios');
+const utils = require ('./utils');
 
 
 
@@ -25,11 +26,15 @@ router.get ('/dev', async(req, res) => {
 
 //初次登入驗證保存
 router.post ('/login', async(req, res) => {
+  try {
+    const response = await axios.get ('https://api.line.me/v2/profile',
+      { headers: { 'Authorization': `Bearer ${req.body.accessToken}` } });
 
-  const response = await axios.get ('https://api.line.me/v2/profile',
-    { headers: { 'Authorization': `Bearer ${req.body.accessToken}` } });
-  console.log (response.data);
-  res.json (response.data);
+    res.json (utils.response (response.data));
+  } catch (error) {
+    res.send (utils.response ('登入錯誤', '0001'));
+  }
+
 });
 
 

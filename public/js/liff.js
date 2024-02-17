@@ -54,45 +54,47 @@ let initializeLiff = (myLiffId) => {
      * Initialize the app by calling functions handling individual app components
      */
 let initializeApp = () => {
-  liff.getAccessToken ().then ((accessToken) => {
-    $.ajax (
-      {
-        url: '/login',
-        method: 'POST',
-        dataType: 'json',
-        contentType: 'application/json;charset=utf-8',          
-        data: JSON.stringify ({ accessToken: accessToken }),
-        success: (jsonResponse) => {
-          user = new User (jsonResponse);
+  $.ajax (
+    {
+      url: '/login',
+      method: 'POST',
+      dataType: 'json',
+      contentType: 'application/json;charset=utf-8',          
+      data: JSON.stringify ({ accessToken: liff.getAccessToken () }),
+      success: (jsonResponse) => {
+        if (jsonResponse.code == '0000'){
+          $ ('#LineStatus').find ('.card-body').text ('登入成功');
+
+          user = new User (jsonResponse.data);
           loading.hide ();
           $ ('body').trigger ('liffReady'); 
+        } else {
+          //登入失敗  dev測試用
+          $.ajax (
+            {
+              url: '/dev',
+              method: 'GET',
+              type: 'GET', success: (jsonResponse) => {
+                user = new User (jsonResponse); 
+                loading.hide ();
 
-        }, error: (error) => {
-          $ ('#LineStatus').find ('.card-body').text ('登入失敗');
-        } 
-      });
-  }).catch ((error) => {
-    //登入失敗  dev測試用
-    $.ajax (
-      {
-        url: '/dev',
-        method: 'GET',
-        type: 'GET', success: (jsonResponse) => {
-          user = new User (jsonResponse); 
-          loading.hide ();
+                $ ('body').trigger ('liffReady'); 
+                $ ('#LineStatus').find ('.card-body').text ('登入成功dev');
 
-          $ ('body').trigger ('liffReady'); 
+              }, error: (error) => {
+                $ ('#LineStatus').find ('.card-body').text ('登入失敗');
+              } 
+            });
+        }
+     
 
-        }, error: (error) => {
-          console.log ('程式失敗 連線失敗');
-        } 
-      });
-  
-    
+      }, error: (error) => {
+        $ ('#LineStatus').find ('.card-body').text ('登入失敗,連線出錯');
+        
+      } 
+    });
    
-  }).finally (() => {
-    displayLiffData ();
-  });
+  
 };
 
 //登入狀態
