@@ -54,62 +54,55 @@ let initializeLiff = (myLiffId) => {
      * Initialize the app by calling functions handling individual app components
      */
 let initializeApp = () => {
-  $.ajax (
-    {
-      url: '/login',
-      method: 'POST',
-      dataType: 'json',
-      contentType: 'application/json;charset=utf-8',          
-      data: JSON.stringify ({ accessToken: liff.getAccessToken () }),
-      success: (jsonResponse) => {
-        if (jsonResponse.code == '0000'){
-          $ ('#LineStatus').find ('.card-body').text ('登入成功');
-
-          user = new User (jsonResponse.data);
-          loading.hide ();
-          $ ('body').trigger ('liffReady'); 
-        } else {
-          //登入失敗  dev測試用
-          $.ajax (
-            {
-              url: '/dev',
-              method: 'GET',
-              type: 'GET', success: (jsonResponse) => {
-                user = new User (jsonResponse); 
-                loading.hide ();
-
-                $ ('body').trigger ('liffReady'); 
-                $ ('#LineStatus').find ('.card-body').text ('登入成功dev');
-
-              }, error: (error) => {
-                $ ('#LineStatus').find ('.card-body').text ('登入失敗');
-              } 
-            });
-        }
-     
-
-      }, error: (error) => {
-        $ ('#LineStatus').find ('.card-body').text ('登入失敗,連線出錯');
-        
-      } 
-    });
-   
   
+  liff.getProfile ().then ((profile) => {
+    $.ajax (
+      {
+        url: '/login',
+        method: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',          
+        data: JSON.stringify ({ accessToken: liff.getAccessToken () }),
+        success: (jsonResponse) => {
+          if (jsonResponse.code == '0000'){
+            $ ('#LineStatus').find ('.card-body').text ('登入成功');
+  
+            user = new User (jsonResponse.data);
+            loading.hide ();
+            $ ('body').trigger ('liffReady'); 
+          } else {
+            $ ('#LineStatus').find ('.card-body').text ('登入失敗參數錯誤');
+
+          }
+      
+        }, error: (error) => {
+          $ ('#LineStatus').find ('.card-body').text ('登入失敗,連線出錯');
+          
+        } 
+      });
+  }).catch ((error) => {
+    //登入失敗  dev測試用
+    $.ajax (
+      {
+        url: '/dev',
+        method: 'GET',
+        type: 'GET', success: (jsonResponse) => {
+          user = new User (jsonResponse); 
+          loading.hide ();
+
+          $ ('body').trigger ('liffReady'); 
+          $ ('#LineStatus').find ('.card-body').text ('登入成功dev');
+
+        }, error: (error) => {
+          $ ('#LineStatus').find ('.card-body').text ('登入失敗');
+        } 
+      });
+  
+    
+   
+  });
 };
 
-//登入狀態
-function displayLiffData() {
-  let status = '';
-  status += 'language=' + liff.getLanguage () + ' ; ';
-  status += 'sdkVersion=' + liff.getVersion () + ' ; ';
-  status += 'lineVersion=' + liff.getLineVersion () + ' ; ';
-  status += 'isInClient=' + liff.isInClient () + ' ; ';
-  status += 'isLoggedIn=' + liff.isLoggedIn () + ' ; ';
-  status += 'deviceOS=' + liff.getOS () + ' ; ';
-  $ ('#LineStatus').find ('.card-body').text (status);
-
-}
-    
     
       
 // //登入登出
