@@ -39,7 +39,8 @@
     "jquery": "^3.6.0",
     "jquery-ui-bundle": "^1.12.1-migrate",
     "js-yaml": "^4.1.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "qrcode": "^1.5.3"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^6.21.0",

@@ -1,15 +1,16 @@
-/** 成功錯誤回傳內容定義 */
-exports.response = ( args) => {
-  console.log (args);
-  if (args.length == 1){
-    let res = { data: args[0],
-      code: '0000' };
-    return JSON.stringify (res);
-  } else {
-    let res = { data: args[0],
-      code: args[1] };
-    return JSON.stringify (res);
-  }
+/** 成功回傳內容定義 */
+exports.response = (data) => {
+  let res = { data: data,
+    code: '0000' };
+  return JSON.stringify (res);
+
+};
+
+/** 錯誤回傳內容定義 */
+exports.response = ( data, code) => {
+  let res = { data: data,
+    code: code };
+  return JSON.stringify (res);
  
 };
 
@@ -23,5 +24,20 @@ exports.checkAuth = (req, res) => {
     return false;
   }
 };
+
+/** 產生亂數16碼 */
+exports.getRandomCode = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const length = 16;
+  let randomCode = '';
+  
+  for (let i = 0; i < length; i ++) {
+    const randomIndex = Math.floor (Math.random () * characters.length);
+    randomCode += characters.charAt (randomIndex);
+  }
+  
+  return randomCode;
+};
+
 
 module.exports = exports;

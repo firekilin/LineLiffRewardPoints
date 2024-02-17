@@ -27,6 +27,7 @@ let base64ToBlob = (base64, type) => {
   const byteArray = new Uint8Array (byNumbers);
   return new Blob ([byteArray], { type: 'application/' + type });
 };
+
 /*
   * bloburl轉base64
   *

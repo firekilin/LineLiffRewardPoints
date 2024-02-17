@@ -1,0 +1,48 @@
+{
+  "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true,
+      "jquery":true
+  },
+  "extends": "eslint:recommended",
+
+  "rules": {
+      // 不需要 
+      "space-before-function-paren": 0,  // 函式定義時括號前面要不要有空格
+      "eol-last": 0,  // 檔案以單一的換行符結束
+      "no-extra-semi": 0, // 可以多餘的冒號
+      "eqeqeq": 0, // 必須使用全等
+      "one-var": 0, // 連續宣告
+      "no-undef": 0, // 可以 有未定義的變數
+      // 程式碼風格
+      "indent": ["error", 2],
+      "quotes": ["warn", "single", { "allowTemplateLiterals": true }],
+      "no-console": "off",
+      "semi": ["error", "always"], // 語句不需要分號結尾
+      "func-call-spacing":["warn", "always"],
+      "comma-spacing": ["error", { "before": false, "after": true }],     //逗點後空格
+      "space-unary-ops": [1, { "words": true, "nonwords": true}], //一元運算子前後不要加空格
+      "space-infix-ops": "error",     // 運算子前後空格
+      "keyword-spacing": [1, {"before": true, "after": true }],  //關鍵字前後的空格
+      "no-multi-spaces": 1, // 不能用多餘的空格
+      "key-spacing": [1, {  // 物件字面量中冒號的前後空格
+          "beforeColon": false,
+          "afterColon": true
+      }],
+      "arrow-body-style": ["error", "always"],    //箭頭函式 要換行
+      "arrow-spacing": ["error", { "before": true, "after": true }],   //箭頭函式 前後都有空格
+      "object-curly-newline": ["error", { "minProperties": 3 }],    //大括號裡包含4個以上就要換行
+      "object-curly-spacing": ["error", "always", { "objectsInObjects": true }],
+      "array-bracket-spacing": ["error", "never"],    //陣列裡的值不會與中括號前後空格
+      "array-element-newline": ["error","consistent"],    //陣列可以並列或併排
+      "yield-star-spacing": ["error", "both"],    //*符號前後空格
+      "valid-typeof": ["error", {
+          "requireStringLiterals": true
+      }], //在使用typeof表示式比較的時候強制使用有效的字串
+      //警告
+      "no-unused-vars": 0, // 不能有聲明後未被使用的變數或引數
+      "class-methods-use-this": ["error", { "enforceForClassFields": false}]
+      
+  }
+}

@@ -1,6 +1,6 @@
 let user;
 
-$(()=>{
+$ (() => {
   //載入開始
   loading.show ();
   $.ajax (
@@ -15,7 +15,7 @@ $(()=>{
       } 
     });
 
-})
+});
 
     
 /**
@@ -23,20 +23,20 @@ $(()=>{
     * 驗證liff
     * @param {string} myLiffId The LIFF ID of the selected element
     */
-let initializeLiffOrDie=(myLiffId)=> {
+let initializeLiffOrDie = (myLiffId) => {
   if (! myLiffId) {
     console.log ('程式失敗 LIFF連線代碼遺失');
   } else {
     initializeLiff (myLiffId);
   }
-}
+};
     
 /**
     * Initialize LIFF
     * 設定初始LIFF
     * @param {string} myLiffId The LIFF ID of the selected element
     */
-let  initializeLiff=(myLiffId)=> {
+let initializeLiff = (myLiffId) => {
   
   liff
     .init ({ liffId: myLiffId })
@@ -47,19 +47,19 @@ let  initializeLiff=(myLiffId)=> {
       console.log ('初始化失敗 可能不是冰塊的錯');
 
     });
-}
+};
     
 /**
      * Initialize the app by calling functions handling individual app components
      */
-let initializeApp=()=> {
+let initializeApp = () => {
   
-  liff.getProfile ().then ((profile)=> {
+  liff.getProfile ().then ((profile) => {
     user = new User (profile);    
     loading.hide ();
 
     $ ('body').trigger ('liffReady'); 
-  }).catch ((error)=> {
+  }).catch ((error) => {
     //登入失敗  dev測試用
     $.ajax (
       {
@@ -78,22 +78,23 @@ let initializeApp=()=> {
   
     
    
-  }).finally(()=>{
-    displayLiffData();
+  }).finally (() => {
+    displayLiffData ();
   });
-}
+};
 
 //登入狀態
 function displayLiffData() {
-  let status="";
-  status+="language="+liff.getLanguage () +" ; ";
-  status+="sdkVersion="+liff.getVersion () +" ; ";
-  status+="lineVersion="+liff.getLineVersion () +" ; ";
-  status+="isInClient="+liff.isInClient () +" ; ";
-  status+="isLoggedIn="+liff.isLoggedIn () +" ; ";
-  status+="deviceOS="+liff.getOS () +" ; ";
+  let status = '';
+  status += 'language=' + liff.getLanguage () + ' ; ';
+  status += 'sdkVersion=' + liff.getVersion () + ' ; ';
+  status += 'lineVersion=' + liff.getLineVersion () + ' ; ';
+  status += 'isInClient=' + liff.isInClient () + ' ; ';
+  status += 'isLoggedIn=' + liff.isLoggedIn () + ' ; ';
+  status += 'deviceOS=' + liff.getOS () + ' ; ';
+  status += 'getAccessToken=' + liff.getAccessToken () + ' ; ';
 
-  $('#LineStatus').find('.card-body').text(status);
+  $ ('#LineStatus').find ('.card-body').text (status);
 
 }
     
@@ -114,7 +115,7 @@ function displayLiffData() {
     
     
 // sendMessages call  傳訊息
-let sendMessage=(gettext)=>{
+let sendMessage = (gettext) => {
   if (liff.isInClient ()) {
  
     liff.sendMessages ([{ 'type': 'text',
@@ -124,25 +125,25 @@ let sendMessage=(gettext)=>{
       window.alert ('Error sending message: ' + error);
     });
   }
-}
+};
  
     
     
     
     
 //分享訊息
-let shareMessage=(mes)=>{
+let shareMessage = (mes) => {
   if (liff.isApiAvailable ('shareTargetPicker')) {
     liff.shareTargetPicker ([{ 'type': 'text',
       'text': mes }]).then (
-        window.alert("分享成功")
-        ).catch (function (res) {
-      window.alert("分享失敗")
+      window.alert ('分享成功')
+    ).catch (function (res) {
+      window.alert ('分享失敗');
     });
   } else {
-    window.alert("未允許此程式使用分享功能")
+    window.alert ('未允許此程式使用分享功能');
   }
-}
+};
  
 
     
