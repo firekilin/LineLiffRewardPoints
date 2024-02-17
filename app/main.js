@@ -26,12 +26,10 @@ router.get ('/dev', async(req, res) => {
 //初次登入驗證保存
 router.post ('/login', async(req, res) => {
 
-  let test = await axios.post ('https://api.line.me/oauth2/v2.1/verify', 
-    new URLSearchParams ({ 'id_token': req.body.IDtoken }),
-    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
-
-  console.log (test);
-  res.json (test);
+  const response = await axios.get ('https://api.line.me/v2/profile',
+    { headers: { 'Authorization': `Bearer ${req.body.accessToken}` } });
+  console.log (response.data);
+  res.json (response.data);
 });
 
 

@@ -45,7 +45,6 @@ let initializeLiff = (myLiffId) => {
       initializeApp ();
     })
     .catch ((err) => {
-      //使用非手機
       console.log ('初始化失敗 可能不是冰塊的錯');
 
     });
@@ -55,28 +54,60 @@ let initializeLiff = (myLiffId) => {
      * Initialize the app by calling functions handling individual app components
      */
 let initializeApp = () => {
-  $.ajax (
-    {
-      url: '/login',
-      method: 'POST',
-      dataType: 'json',
-      contentType: 'application/json;charset=utf-8',          
-      data: JSON.stringify (
-        { IDtoken: liff.getIDToken () }), 
-      success: (jsonResponse) => {
-        user = new User (jsonResponse.data); 
-        loading.hide ();
-        $ ('#LineStatus').find ('.card-body').text ('登入成功');
-        $ ('body').trigger ('liffReady'); 
+  
+  liff.getProfile ().then ((profile) => {
+    $.ajax (
+      {
+        url: '/login',
+        method: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',          
+        data: JSON.stringify ({ accessToken: liff.getAccessToken () }),
+        success: (jsonResponse) => {
+          user = new User (jsonResponse);
+          loading.hide ();
+          $ ('body').trigger ('liffReady'); 
 
-      }, error: (error) => {
-        $ ('#LineStatus').find ('.card-body').text ('登入失敗');
-      } 
-    });
-  user = new User (profile);    
+        }, error: (error) => {
+          $ ('#LineStatus').find ('.card-body').text ('登入失敗');
+        } 
+      });
+  }).catch ((error) => {
+    //登入失敗  dev測試用
+    $.ajax (
+      {
+        url: '/dev',
+        method: 'GET',
+        type: 'GET', success: (jsonResponse) => {
+          user = new User (jsonResponse); 
+          loading.hide ();
+
+          $ ('body').trigger ('liffReady'); 
+
+        }, error: (error) => {
+          console.log ('程式失敗 連線失敗');
+        } 
+      });
+  
+    
    
+  }).finally (() => {
+    displayLiffData ();
+  });
 };
 
+//登入狀態
+function displayLiffData() {
+  let status = '';
+  status += 'language=' + liff.getLanguage () + ' ; ';
+  status += 'sdkVersion=' + liff.getVersion () + ' ; ';
+  status += 'lineVersion=' + liff.getLineVersion () + ' ; ';
+  status += 'isInClient=' + liff.isInClient () + ' ; ';
+  status += 'isLoggedIn=' + liff.isLoggedIn () + ' ; ';
+  status += 'deviceOS=' + liff.getOS () + ' ; ';
+  $ ('#LineStatus').find ('.card-body').text (status);
+
+}
     
     
       
