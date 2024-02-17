@@ -1,13 +1,10 @@
-/** 成功回傳內容定義 */
-exports.response = (data) => {
-  let res = { data: data,
-    code: '0000' };
-  return JSON.stringify (res);
 
-};
 
-/** 錯誤回傳內容定義 */
+/** 成功錯誤回傳內容定義 */
 exports.response = ( data, code) => {
+  if (code == null){
+    code = '0000';
+  }
   let res = { data: data,
     code: code };
   return JSON.stringify (res);

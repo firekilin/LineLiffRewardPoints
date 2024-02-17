@@ -21,7 +21,7 @@ router.get ('/send-id', async(req, res) => {
 
 //dev account
 router.get ('/dev', async(req, res) => {
-  res.json (config.get ('dev'));
+  res.send (utils.response (config.get ('dev')));
 });
 
 //初次登入驗證保存
