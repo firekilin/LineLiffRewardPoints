@@ -29,9 +29,11 @@ router.post ('/login', async(req, res) => {
   try {
     const response = await axios.get ('https://api.line.me/v2/profile',
       { headers: { 'Authorization': `Bearer ${req.body.accessToken}` } });
-
+    console.log (response.data);
     res.json (utils.response (response.data));
   } catch (error) {
+    console.log (error);
+
     res.send (utils.response ('登入錯誤', '0001'));
   }
 
