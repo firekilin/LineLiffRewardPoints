@@ -11,14 +11,33 @@ exports.response = ( data, code) => {
  
 };
 
-
-
-/** 驗證使用者 */
+/** 驗證使用者  */
 exports.checkAuth = (req, res) => {
-  if (req.session.userno == req.body.userno){
+  if (req.session.userId){
     return true;
   } else {
     return false;
+  }
+};
+
+/** base64 to buffer */
+exports.base64ToBuffer = (base64) => {
+  if (base64 == null || base64 == ''){
+    return null;
+  }
+  const base64String = base64.substring (base64.indexOf (',') + 1); 
+  const buffer = Buffer.from (base64String, 'base64');
+  return buffer;
+};
+
+
+
+/** 驗證使用者 api專用 */
+exports.checkAuthApi = (req, res) => {
+  if (req.session.userId){
+    return true;
+  } else {
+    res.send (exports.response ('登入錯誤', '0001'));
   }
 };
 

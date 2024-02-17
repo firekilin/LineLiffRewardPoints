@@ -1,77 +1,93 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html data-bs-theme="dark">
-  <% let rootpath='./' %>
-<head>
-    <title>建立卡片</title>
-  <meta name="viewport" content="width=device-width, initial-scale=yes, user-scalable=yes">
-  <!--jquery-->
-  <script src="<%=rootpath %>plugins/jquery/dist/jquery.min.js"></script>
-  <!--bootstrap-->
-  <link href="<%=rootpath %>plugins/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
-  <link href="<%=rootpath %>plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="<%=rootpath %>plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<% let rootpath='./' %>
 
-  <link href="<%=rootpath %>public/css/object.css" rel="stylesheet" />
+    <head>
+        <title>建立卡片</title>
+        <meta name="viewport" content="width=device-width, initial-scale=yes, user-scalable=yes">
+        <!--jquery-->
+        <script src="<%=rootpath %>plugins/jquery/dist/jquery.min.js"></script>
+        <!--bootstrap-->
+        <link href="<%=rootpath %>plugins/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+        <link href="<%=rootpath %>plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="<%=rootpath %>plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-
-</head>
-
-<body>
-    <!--頁面主程式-->
-    <script src="<%=rootpath %>public/js/index.js"></script>
-    <!--登入程式及自製套件-->
-    <script src="<%=rootpath %>public/js/object.js"></script>
-    <script src="<%=rootpath %>public/js/utils.js"></script>
-
-    <script src="public/js/untils.js"></script>
-    <script src="public/js/edit.js"></script>
+        <link href="<%=rootpath %>public/css/object.css" rel="stylesheet" />
 
 
-    
+    </head>
 
-    <main class="container">
-      
-      <div id="main" class="container">
-  
-          <canvas id="myCanvas" width="400" height="400"></canvas>
-          <div class="input-group mb-3">
-              <span class="input-group-text" >集點卡背景圖</span>
-              <input class="form-control" type="file" id="bgupload" accept="image/png, image/gif, image/jpeg">
-          </div>
-         
-          <div class="input-group mb-3">
-              <span class="input-group-text" >貼紙圖示(1:1)</span>
-              <input class="form-control" type="file" id="pointupload" accept="image/png, image/gif, image/jpeg">
-          </div>
-          <div class="input-group mb-3">
-              <span for="points" class="input-group-text" >貼紙數量</span>
-              <input id="points" type="number" value="2" class="form-control">
-          </div>
-  
-          <div class="input-group mb-3">
-              <span for="pointsize" class="input-group-text" >貼紙大小</span>
-              <div class="form-control">
-                  <input  id="pointsize2" type="range"  value="30" min="10" max="1000" class=" form-range"  >
-              </div>
-              <input id="pointsize" type="number" value="30" class="input-group-text">
-  
-          </div>
-  
-          <button id="send"  type="button" class="btn btn-dark">送出</button>
-  
-  
-  
-      </div>
-      <div id="main2" class="container">
-          <canvas id="canvas" width="400" height="400"></canvas>
-  
-      </div>
-        
-    </main> 
-
-    
+    <body>
+        <!--頁面主程式-->
+        <script src="<%=rootpath %>public/js/index.js"></script>
+        <!--登入程式及自製套件-->
+        <script src="<%=rootpath %>public/js/object.js"></script>
+        <script src="<%=rootpath %>public/js/utils.js"></script>
+        <script src="<%=rootpath %>public/js/edit.js"></script>
 
 
-</body>
+
+
+        <main id="main" class="container">
+            <canvas id="myCanvas" width="400" height="400"></canvas>
+            <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">集點卡背景圖</span>
+                    <input class="form-control" type="file" id="bgupload" accept="image/png, image/gif, image/jpeg">
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">貼紙圖示(1:1)</span>
+                    <input class="form-control" type="file" id="pointupload" accept="image/png, image/gif, image/jpeg">
+                </div>
+                <div class="input-group mb-3">
+                    <span for="points" class="input-group-text">貼紙數量</span>
+                    <input id="points" type="number" value="2" class="form-control">
+                </div>
+
+                <div class="input-group mb-3">
+                    <span for="pointsize" class="input-group-text">貼紙大小</span>
+                    <div class="form-control">
+                        <input id="pointsize2" type="range" value="30" min="10" max="1000" class=" form-range">
+                    </div>
+                    <input id="pointsize" type="number" value="30" class="input-group-text">
+
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">名稱</span>
+                    <input class="form-control" type="text" id="cardName">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">期限</span>
+                    <input class="form-control" type="date" id="cardExp">
+                    <span class="input-group-text">是否可以轉送</span>
+                    <div class="form-control">
+                        <input type="checkbox" id="cardGift">
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">兌換(GIF)</span>
+                    <input class="form-control" type="file" id="pointOver" accept="image/png, image/gif, image/jpeg">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">額外貼紙圖示(1:1)</span>
+                    <div id="pointMore" class="form-control d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary">
+                        <i class="bi bi-plus-square-dotted" id="pointAdd"></i>
+                    </div>
+                </div>
+             
+             
+
+                <button id="send" type="button" class="btn btn-dark">送出</button>
+
+            </div>
+
+
+        </main>
+
+
+
+
+    </body>
 
 </html>

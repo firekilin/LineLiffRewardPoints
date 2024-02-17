@@ -33,10 +33,9 @@ app.use (cookieParser (credentials.cookieSecret));
 app.set ('views', './views');
 app.set ('view engine', 'ejs');
 
-
 const bodyParser = require ('body-parser'); //設定取得req.body
-app.use ( bodyParser.json () ); //req.body支援json格式
-app.use ( bodyParser.urlencoded ( { extended: true } ) ); //解析內容 
+app.use ( bodyParser.json ({ limit: '50mb' }) ); //req.body支援json格式
+app.use ( bodyParser.urlencoded ( { extended: true, limit: '50mb' } ) ); //解析內容 
 
 
 app.use ('/', main); //頁面用

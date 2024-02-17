@@ -261,6 +261,7 @@ class editimg {
       bgupload: '',
       pointupload: '',
       scene: null,
+      scale: 1,
       ctx: {},
       img: {},
       points: $ ('<input>').val ('1'),
@@ -289,6 +290,8 @@ class editimg {
           this.scale = ($ ('#main').width () / image.width);
           setw = image.width * this.scale;
           seth = image.height * this.scale;
+        } else {
+          this.scale = 1;
         }
         this.canvasw = setw;
         this.canvash = seth;
@@ -357,6 +360,7 @@ class editimg {
   }
   getCanvasp() {
     let pointsList = [];
+
     this.scene.getall ().forEach (e =>
     {return pointsList.push ({ p: {
       x: (e.p.x / this.scale),
@@ -366,9 +370,10 @@ class editimg {
     index: e.pointname });}
     );
     return {
-      pointsList: pointsList,
+      cardPosition: pointsList,
+      cardNum: this.scene.getall ().length,
       bgImage: imgToBase64 (this.img),
-      pointImage: imgToBase64 (this.pointimg)
+      pointImage: imgToBase64 (this.pointimg),
     };
   }
    
@@ -378,7 +383,12 @@ class editimg {
 //初始
 $ (() => {
 
+  //綁定大小
   setDepend ($ ('#pointsize'), $ ('#pointsize2'));
+  //新增貼紙
+  $ ('#pointAdd').on ('click', () => {
+    $ ('#pointMore').append ($ ('<input name="pointfile" class="form-control" type="file" accept="image/png, image/gif, image/jpeg" >'));
+  });
   let myeditcanvas;
 
 
@@ -405,4 +415,36 @@ $ (() => {
   };
   bgImage.src = 'public/img/bg.png';
 
+  $ ('#send').on ('click', async () => {
+    let saveData = myeditcanvas.getCanvasp ();
+    saveData.cardName = $ ('#cardName').val ();
+    if ($ ('#cardExp').val () != ''){
+      saveData.cardExp = $ ('#cardExp').val () + ' 23:59:59';
+    }
+    saveData.cardGift = $ ('#cardGift').prop ('checked') ? 'e' : 'd';
+    let pointImgs = [];
+    for (let i = 0;i < $ ('input[name=pointfile]').length;i ++ ){
+      pointImgs.push (await fileToBase64 ($ ('input[name=pointfile]')[i].files[0]));
+    }
+
+    saveData.pointOver = await fileToBase64 ($ ('#pointOver')[0].files[0]);
+
+    saveData.pointImgs = pointImgs;
+
+    console.log (saveData);
+    $.ajax (
+      {
+        url: '/api/createCard',
+        method: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',          
+        data: JSON.stringify (saveData),
+        success: (json) => {
+         
+        }, error: (error) => {
+          console.log (error);
+
+        } 
+      });
+  });
 });

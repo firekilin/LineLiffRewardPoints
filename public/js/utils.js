@@ -55,3 +55,18 @@ let imgToBase64 = (img) => {
   ctx.drawImage (img, 0, 0);
   return canvas.toDataURL ('image/png');
 };
+
+/** file to base64 */
+let fileToBase64 = (file) => {
+  return new Promise ((resolve, reject) => {
+    const reader = new FileReader ();
+  
+    reader.onload = function(event) {
+      const base64 = event.target.result;
+      resolve (base64);
+    };
+    
+    reader.readAsDataURL (file);
+  });
+  
+};

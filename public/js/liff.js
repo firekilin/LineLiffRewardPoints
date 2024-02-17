@@ -87,7 +87,9 @@ let initializeApp = () => {
       {
         url: '/dev',
         method: 'GET',
-        type: 'GET', success: (jsonResponse) => {
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',
+        success: (jsonResponse) => {
           user = new User (jsonResponse); 
           loading.hide ();
 
