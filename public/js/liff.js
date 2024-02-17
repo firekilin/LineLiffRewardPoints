@@ -45,6 +45,7 @@ let initializeLiff = (myLiffId) => {
       initializeApp ();
     })
     .catch ((err) => {
+      //使用非手機
       console.log ('初始化失敗 可能不是冰塊的錯');
 
     });

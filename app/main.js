@@ -1,6 +1,8 @@
 const router = require ('express').Router ();
 const points = require ('../dao/RewardPoints/index');
 const config = require ('config');
+const axios = require ('axios');
+
 
 
 const liffId = config.get ('line.liffId');
@@ -23,9 +25,13 @@ router.get ('/dev', async(req, res) => {
 
 //初次登入驗證保存
 router.post ('/login', async(req, res) => {
-  console.log (req.body.IDtoken);
-  
-  res.json ('完成');
+
+  let test = await axios.post ('https://api.line.me/oauth2/v2.1/verify', 
+    new URLSearchParams ({ 'id_token': req.body.IDtoken }),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+
+  console.log (test);
+  res.json (test);
 });
 
 
