@@ -54,68 +54,28 @@ let initializeLiff = (myLiffId) => {
      * Initialize the app by calling functions handling individual app components
      */
 let initializeApp = () => {
-  
-  liff.getProfile ().then ((profile) => {
-    user = new User (profile);    
-    loading.hide ();
-
-    $ ('body').trigger ('liffReady'); 
-  }).catch ((error) => {
-    //登入失敗  dev測試用
-    $.ajax (
-      {
-        url: '/dev',
-        method: 'GET',
-        type: 'GET', success: (jsonResponse) => {
-          user = new User (jsonResponse); 
-          loading.hide ();
-
-          $ ('body').trigger ('liffReady'); 
-
-        }, error: (error) => {
-          console.log ('程式失敗 連線失敗');
-        } 
-      });
-  
-    
-   
-  }).finally (() => {
-    displayLiffData ();
-  });
-};
-
-//登入狀態
-function displayLiffData() {
-  let status = '';
-  status += 'language=' + liff.getLanguage () + ' ; ';
-  status += 'sdkVersion=' + liff.getVersion () + ' ; ';
-  status += 'lineVersion=' + liff.getLineVersion () + ' ; ';
-  status += 'isInClient=' + liff.isInClient () + ' ; ';
-  status += 'isLoggedIn=' + liff.isLoggedIn () + ' ; ';
-  status += 'deviceOS=' + liff.getOS () + ' ; ';
   $.ajax (
     {
-      url: 'https://api.line.me/oauth2/v2.1/verify?access_token=' + liff.getAccessToken (),
-      type: 'GET',
+      url: '/login',
+      method: 'POST',
       dataType: 'json',
       contentType: 'application/json;charset=utf-8',          
-          
+      data: JSON.stringify (
+        { IDtoken: liff.getIDToken () }), 
       success: (jsonResponse) => {
-
-        alert (JSON.stringify (jsonResponse));
-        alert (JSON.stringify (liff.getIDToken ()));
-
+        user = new User (jsonResponse.data); 
+        loading.hide ();
+        $ ('#LineStatus').find ('.card-body').text ('登入成功');
+        $ ('body').trigger ('liffReady'); 
 
       }, error: (error) => {
-
-        alert (' 連線失敗');
+        $ ('#LineStatus').find ('.card-body').text ('登入失敗');
       } 
     });
-  
+  user = new User (profile);    
+   
+};
 
-  $ ('#LineStatus').find ('.card-body').text (status);
-
-}
     
     
       

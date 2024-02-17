@@ -23,8 +23,8 @@ router.get ('/dev', async(req, res) => {
 
 //初次登入驗證保存
 router.post ('/login', async(req, res) => {
-  req.session.userno = req.body.userno;
-  req.session.user = req.body.user;
+  console.log (req.body.IDtoken);
+  
   res.json ('完成');
 });
 
