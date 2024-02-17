@@ -1,3 +1,5 @@
+const { json } = require ('body-parser');
+
 let user;
 
 $ (() => {
@@ -92,7 +94,24 @@ function displayLiffData() {
   status += 'isInClient=' + liff.isInClient () + ' ; ';
   status += 'isLoggedIn=' + liff.isLoggedIn () + ' ; ';
   status += 'deviceOS=' + liff.getOS () + ' ; ';
-  status += 'getAccessToken=' + liff.getAccessToken () + ' ; ';
+  $.ajax (
+    {
+      url: 'https://api.line.me/oauth2/v2.1/verify',
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json;charset=utf-8',
+      data: JSON.stringify ({ access_token: liff.getAccessToken () }),
+          
+          
+      success: (jsonResponse) => {
+
+        alert (jsonResponse);
+
+      }, error: (error) => {
+        console.log ('程式失敗 連線失敗');
+      } 
+    });
+  
 
   $ ('#LineStatus').find ('.card-body').text (status);
 
