@@ -95,15 +95,12 @@ function displayLiffData() {
   status += 'deviceOS=' + liff.getOS () + ' ; ';
   $.ajax (
     {
-      url: 'https://api.line.me/oauth2/v2.1/verify',
-      type: 'POST',
+      url: 'https://api.line.me/oauth2/v2.1/verify?access_token=' + liff.getAccessToken (),
+      type: 'GET',
       dataType: 'json',
-      contentType: 'application/json;charset=utf-8',
-      data: JSON.stringify ({ access_token: liff.getAccessToken () }),
-          
+      contentType: 'application/json;charset=utf-8',          
           
       success: (jsonResponse) => {
-        $ ('#LineStatus').find ('.card-body').text (jsonResponse);
 
         alert (jsonResponse);
 
