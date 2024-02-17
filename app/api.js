@@ -18,7 +18,13 @@ router.post ('/createCard', async(req, res) => {
   }
 
   if (utils.checkAuthApi (req, res)){
-    res.send (utils.response (await points.createCard (req, res)));
+    if (await points.createCard (req, res)){
+      res.send (utils.response ('成功'));
+
+    } else {
+      res.send (utils.response ('失敗', '0004'));
+
+    }
   } 
 });
 

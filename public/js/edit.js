@@ -440,7 +440,11 @@ $ (() => {
         contentType: 'application/json;charset=utf-8',          
         data: JSON.stringify (saveData),
         success: (json) => {
-         
+          if (json.code == '0000'){
+            window.location = '/';
+          } else {
+            alert ('失敗');
+          }
         }, error: (error) => {
           console.log (error);
 
