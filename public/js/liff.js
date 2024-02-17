@@ -103,6 +103,8 @@ function displayLiffData() {
       success: (jsonResponse) => {
 
         alert (JSON.stringify (jsonResponse));
+        alert (JSON.stringify (liff.getIDToken ()));
+
 
       }, error: (error) => {
 
