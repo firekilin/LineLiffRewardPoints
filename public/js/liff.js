@@ -3,7 +3,6 @@ let user;
 
 $ (() => {
   //載入開始
-  loading.show ();
   $.ajax (
     {
       url: '/send-id',
@@ -69,8 +68,7 @@ let initializeApp = () => {
             $ ('#LineStatus').find ('.card-body').text ('登入成功');
   
             user = new User (jsonResponse.data);
-            loading.hide ();
-            $ ('body').trigger ('liffReady'); 
+            indexReady ();
           } else {
             $ ('#LineStatus').find ('.card-body').text ('登入失敗參數錯誤');
 
@@ -91,11 +89,10 @@ let initializeApp = () => {
         contentType: 'application/json;charset=utf-8',
         success: (jsonResponse) => {
           user = new User (jsonResponse); 
-          loading.hide ();
+        
 
-          $ ('body').trigger ('liffReady'); 
+          indexReady ();
           $ ('#LineStatus').find ('.card-body').text ('登入成功dev');
-
         }, error: (error) => {
           $ ('#LineStatus').find ('.card-body').text ('登入失敗');
         } 

@@ -8,19 +8,6 @@ const utils = require ('./utils');
 
 const liffId = config.get ('line.liffId');
 
-//登入Line頁面 (首頁)
-router.get ('/', async(req, res) => {
-  res.render ('index');
-});
-
-//製作集點卡
-router.get ('/edit', async(req, res) => {
-  if (utils.checkAuth (req, res)){
-    res.render ('edit');
-  } else {
-    res.redirect ('/');
-  }
-});
 
 //api liffId get
 router.get ('/send-id', async(req, res) => {
@@ -50,4 +37,24 @@ router.post ('/login', async(req, res) => {
 });
 
 
+//登入Line頁面 (首頁)
+router.get ('/', async(req, res) => {
+  res.render ('index');
+});
+
+//製作集點卡
+router.get ('/create', async(req, res) => {
+  if (utils.checkAuth (req, res)){
+    res.render ('create');
+  } else {
+    res.redirect ('/');
+  }
+});
+
+
+//管理集點卡
+router.get ('/manage/:id', async(req, res) => {
+  const id = req.params.id;
+  res.render ('edit', { id: id });
+});
 module.exports = router;

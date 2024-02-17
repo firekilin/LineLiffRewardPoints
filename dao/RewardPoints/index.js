@@ -96,6 +96,53 @@ exports.createCard = async(req, res) => {
   }
 };
 
+/** 卡片清單 */
+exports.manageCardList = async(req, res) => {
+  try {
+    let sql = 'SELECT cardSeq,cardName,cardNum,cardExp,cardGift FROM reward_point.card where ? ';
+    let values = { createUserno: req.session.userId };
+    let check = await query (sql, values);
+    if (check){
+      return check;
+    }
+    
+  } catch (e){
+    return false;
+  }
+};
+
+exports.manageCard = async(req, res) => {
+  let json = {};
+  try {
+    let sql = 'SELECT cardPosition FROM reward_point.card where ? ';
+    let values = { cardSeq: req.body.cardSeq };
+    let check = await query (sql, values);
+    if (check){
+      json.cardPosition = check[0].cardPosition;
+    }
+    sql = 'SELECT filedata FROM reward_point.file where ? ';
+    values = { cardSeq: req.body.cardSeq, fileType: '1' };
+    check = await query (sql, values);
+    if (check){
+      json.bgImage = check[0].filedata;
+    }
+    sql = 'SELECT filedata FROM reward_point.file where ? ';
+    values = { cardSeq: req.body.cardSeq, fileType: '2' };
+    check = await query (sql, values);
+    let pointImage = [];
+    if (check){
+      for (let i = 0;i < check.length;i ++){
+        pointImage.push (check[i].pointImage);
+      }
+      json.pointImage = pointImage;
+    }
+    return json;
+  } catch (e){
+    return null;
+  }
+};
+
+
 /** 產生點數 代碼 */
 exports.createPoint = async(req, res) => {
   try {
@@ -125,7 +172,6 @@ exports.createPoint = async(req, res) => {
   }
 };
 
-/** 讀取點數 */
 
 
 
