@@ -54,15 +54,14 @@ let initializeLiff = (myLiffId) => {
      * Initialize the app by calling functions handling individual app components
      */
 let initializeApp = () => {
-  
-  liff.getProfile ().then ((profile) => {
+  liff.getAccessToken ().then ((accessToken) => {
     $.ajax (
       {
         url: '/login',
         method: 'POST',
         dataType: 'json',
         contentType: 'application/json;charset=utf-8',          
-        data: JSON.stringify ({ accessToken: liff.getAccessToken () }),
+        data: JSON.stringify ({ accessToken: accessToken }),
         success: (jsonResponse) => {
           user = new User (jsonResponse);
           loading.hide ();
