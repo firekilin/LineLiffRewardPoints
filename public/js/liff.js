@@ -102,7 +102,7 @@ function displayLiffData() {
           
       success: (jsonResponse) => {
 
-        alert (jsonResponse);
+        alert (JSON.stringify (jsonResponse));
 
       }, error: (error) => {
 
