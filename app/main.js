@@ -27,10 +27,15 @@ router.get ('/dev', async(req, res) => {
 //初次登入驗證保存
 router.post ('/login', async(req, res) => {
   try {
+    console.log ('start');
+
     const response = await axios.get ('https://api.line.me/v2/profile',
       { headers: { 'Authorization': `Bearer ${req.body.accessToken}` } });
+    console.log (response.data);
+
     res.send (utils.response (response.data));
   } catch (error) {
+    console.log ('end');
     res.send (utils.response ('登入錯誤', '0001'));
   }
 
