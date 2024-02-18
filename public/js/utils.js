@@ -28,6 +28,25 @@ let base64ToBlob = (base64, type) => {
   return new Blob ([byteArray], { type: 'application/' + type });
 };
 
+/** 
+ * 
+ * 
+*/
+let base64ToImage =(base64)=> {
+  return new Promise ((resolve, reject) => {
+    const blob = base64ToBlob (base64.substring (base64.indexOf (',') + 1), 'image');
+    const blobUrl = URL.createObjectURL (blob);
+    let img = new Image ();
+    img.onload = () => {
+      resolve(img);
+    }
+    img.src = blobUrl;
+
+  });
+}
+
+
+
 /*
   * bloburl轉base64
   *

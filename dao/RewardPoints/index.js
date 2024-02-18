@@ -79,7 +79,7 @@ exports.createCard = async(req, res) => {
         sql = 'INSERT INTO reward_point.file SET ?';
         values = {
           cardSeq: cardId,
-          fileType: '3',
+          fileType: '2',
           fileData: params.pointImgsTemp[i],
           createUserno: req.session.userId,
           createUser: req.session.displayName,
@@ -120,19 +120,19 @@ exports.manageCard = async(req, res) => {
     if (check){
       json.cardPosition = check[0].cardPosition;
     }
-    sql = 'SELECT filedata FROM reward_point.file where ? ';
-    values = { cardSeq: req.body.cardSeq, fileType: '1' };
+    sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
+    values = [req.body.cardSeq, '1' ];
     check = await query (sql, values);
     if (check){
       json.bgImage = check[0].filedata;
     }
-    sql = 'SELECT filedata FROM reward_point.file where ? ';
-    values = { cardSeq: req.body.cardSeq, fileType: '2' };
+    sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
+    values = [req.body.cardSeq, '2' ];
     check = await query (sql, values);
     let pointImage = [];
     if (check){
       for (let i = 0;i < check.length;i ++){
-        pointImage.push (check[i].pointImage);
+        pointImage.push (check[i].filedata);
       }
       json.pointImage = pointImage;
     }

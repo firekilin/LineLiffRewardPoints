@@ -39,6 +39,12 @@ router.get ('/manageCardList', async(req, res) => {
 router.post ('/manageCard', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     let json = await points.manageCard (req, res);
+    json.bgImage= utils.bufferToBase64(json.bgImage);
+    let pointImgsTemp=[];
+    for(let i = 0 ;i<json.pointImage.length;i++){
+      pointImgsTemp.push(utils.bufferToBase64(json.pointImage[i]));
+    }
+    json.pointImage=pointImgsTemp;
     if (json != null){
       res.send (utils.response (json ));
     } else {

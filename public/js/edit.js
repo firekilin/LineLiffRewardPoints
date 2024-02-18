@@ -365,7 +365,7 @@ class editimg {
     {return pointsList.push ({ p: {
       x: (e.p.x / this.scale),
       y: (e.p.y / this.scale),
-      size: e.size
+      size: (e.size / this.scale)
     },
     index: e.pointname });}
     );

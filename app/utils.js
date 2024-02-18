@@ -30,6 +30,16 @@ exports.base64ToBuffer = (base64) => {
   return buffer;
 };
 
+/** buffer to base64 */
+exports.bufferToBase64 = (buffer) => {
+  if (buffer == null || buffer == ''){
+    return null;
+  }
+  let base64 = buffer.toString('base64');
+  return base64;
+};
+
+
 
 
 /** 驗證使用者 api專用 */
