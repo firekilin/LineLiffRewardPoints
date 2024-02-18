@@ -410,6 +410,7 @@ $ (() => {
         points: $ ('#points'),
         pointsize: $ ('#pointsize')
       });
+      loading.hide();
     };
     pointImage.src = 'public/img/point.png';
   };
