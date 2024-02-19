@@ -8,27 +8,37 @@ let indexReady = () => {
       contentType: 'application/json;charset=utf-8',
       success: (json) => {
         for (let i = 0;i < json.data.length;i ++){
-          $ ('#cardManageList').append ($ (`
-                <div class="card">
-                <div class="card-header">
-                  ${json.data[i].cardName}
-                </div>
-                <div class="card-body row">
-                  <div class="col-4">
-                    <p class="card-text">總點數： ${json.data[i].cardNum}</p>
-                  </div>
-                  <div class="col-4">
-                    <p class="card-text">截止日： ${json.data[i].cardExp}</p>
-                  </div>
-                  <div class="col-4">
-                    <p class="card-text">是否可轉送： ${json.data[i].cardGift == 'e' ? '可以' : '不可'}</p>
-                  </div>
-                  <a href="/manage/${json.data[i].cardSeq}" class="btn btn-primary">管理卡片</a>
-                </div>
-              </div>
-          `));
-          
+          let card = $ ('<div class="card">');
+          let cardHeader = $ ('<div class="card-header">').text (json.data[i].cardName);
+          let cardBody = $ ('<div class="card-body row">');
+          cardBody.append ($ ('<div class="col-4">').text ('總點數：' + json.data[i].cardNum));
+          cardBody.append ($ ('<div class="col-4">').text ('截止日：' + (json.data[i].cardExp == null ? '' : (new Date (json.data[i].cardExp)).toLocaleDateString ())));
+          cardBody.append ($ ('<div class="col-4">').text ('是否可轉送：' + (json.data[i].cardGift == 'e' ? '可以' : '不可')));
+          cardBody.append ($ ('<a  class="col-6 btn btn-primary">').text ('管理卡片').on ('click', () => {
+            window.location = '/manage/' + json.data[i].cardSeq;
+          }));
+          let setpoint = $ ('<div class="col-6 row">');
+          //設定發送按鈕
+          let pointSend = $ ('<div class="col-8">');
+          pointSend.append ($ ('<a  class="form-control btn btn-primary">').text ('發送點數').on ('click', () => {
+            window.location = '/manage/' + json.data[i].cardSeq;
+          }));
+          setpoint.append (pointSend);
+          //設定發送數值
+          let pointNum = $ ('<div class="col-4">');
+          let pointSelect = $ ('<select class="form-select">');
+          for (let j = 1;j <= json.data[i].cardNum;j ++){
+            pointSelect.append ($ (`<option value="${j}">${j}</option>`));
+          }
+          pointNum.append (pointSelect);
+          setpoint.append (pointNum);
+          //加入發送點數功能
+          cardBody.append (setpoint);
+          card.append (cardHeader);
+          card.append (cardBody);
+          $ ('#cardManageList').append (card);  
         }
+    
         
       }, error: (error) => {
       } 
