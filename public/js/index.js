@@ -18,12 +18,6 @@ let indexReady = () => {
             window.location = '/manage/' + json.data[i].cardSeq;
           }));
           let setpoint = $ ('<div class="col-6 row">');
-          //設定發送按鈕
-          let pointSend = $ ('<div class="col-8">');
-          pointSend.append ($ ('<a  class="form-control btn btn-primary">').text ('發送點數').on ('click', () => {
-            window.location = '/manage/' + json.data[i].cardSeq;
-          }));
-          setpoint.append (pointSend);
           //設定發送數值
           let pointNum = $ ('<div class="col-4">');
           let pointSelect = $ ('<select class="form-select">');
@@ -31,6 +25,37 @@ let indexReady = () => {
             pointSelect.append ($ (`<option value="${j}">${j}</option>`));
           }
           pointNum.append (pointSelect);
+          //設定發送按鈕
+          let pointSend = $ ('<div class="col-8">');
+          pointSend.append ($ ('<a  class="form-control btn btn-primary">').text ('發送點數').on ('click', () => {
+            
+            $.ajax (
+              {
+                url: '/api/sendPoint',
+                method: 'POST',
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',          
+                data: JSON.stringify ({ cardSeq: json.data[i].cardSeq, pointNum: pointSelect.val () }),
+                success: async (json) => {
+                  if (json.code == '0000'){
+                    let img = await base64ToImage (json.data);
+                    alertModal.getBody ().empty ();
+                    alertModal.getBody ().append (img);
+                    alertModal.show ();
+                  } else {
+                    alert ('失敗');
+                  }
+                }, error: (error) => {
+                  console.log (error);
+        
+                } 
+              });
+
+
+            
+          }));
+          //介面加入
+          setpoint.append (pointSend);
           setpoint.append (pointNum);
           //加入發送點數功能
           cardBody.append (setpoint);

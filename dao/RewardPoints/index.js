@@ -111,6 +111,7 @@ exports.manageCardList = async(req, res) => {
   }
 };
 
+/** 卡片詳細 */
 exports.manageCard = async(req, res) => {
   let json = {};
   try {
@@ -121,13 +122,13 @@ exports.manageCard = async(req, res) => {
       json.cardPosition = check[0].cardPosition;
     }
     sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
-    values = [req.body.cardSeq, '1' ];
+    values = [req.body.cardSeq, '1'];
     check = await query (sql, values);
     if (check){
       json.bgImage = check[0].filedata;
     }
     sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
-    values = [req.body.cardSeq, '2' ];
+    values = [req.body.cardSeq, '2'];
     check = await query (sql, values);
     let pointImage = [];
     if (check){
@@ -146,22 +147,18 @@ exports.manageCard = async(req, res) => {
 /** 產生點數 代碼 */
 exports.createPoint = async(req, res) => {
   try {
-    let params = req.body;
-    let check = await query (`INSERT INTO reward_point.card (
-      cardName, cardNum, cardPosition, cardExp, cardGift,
-      createUserno, createUser, modifyUserno, modifyUser
-      ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?);`, [
-      params.cardName,
-      params.cardNum,
-      JSON.stringify (params.cardPosition),
-      params.cardExp,
-      params.cardGift,
-      req.session.userId,
-      req.session.displayName,
-      req.session.userId,
-      req.session.displayName
-    ]);
+    sql = 'INSERT INTO reward_point.point SET ?';
+    values = {
+      cardSeq: req.body.cardSeq,
+      pointNum: req.body.pointNum,
+      pointCode: req.body.pointCode,
+      status: 'w',
+      createUserno: req.session.userId,
+      createUser: req.session.displayName,
+      modifyUserno: req.session.userId,
+      modifyUser: req.session.displayName,
+    };
+    check = await query (sql, values);
     if (check){
       return true;
     } else {
@@ -173,6 +170,33 @@ exports.createPoint = async(req, res) => {
 };
 
 
+/** 接收點數 代碼 */
+exports.getPoint = async(req, res) => {
+  try {
+    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
+      left join reward_point.card as b on a.cardSeq=b.cardSeq  
+      where pointCode = ? and status = ? `;
+    values = [req.params.pointCode, 'w'];
+    let check = await query (sql, values);
+    if (check){
+      let sql = `UPDATE reward_point.point SET ?`;
+      values = {
+        pointUserno: req.session.userId,
+        status: 'e',
+        modifyUserno: req.session.userId,
+        modifyUser: req.session.displayName,
+      };
+      let check2 = await query (sql, values);
+      if (check2){
+        return check;
+      }
+    } 
+    return false;
+
+  } catch (e){
+    return false;
+  }
+};
 
 
 

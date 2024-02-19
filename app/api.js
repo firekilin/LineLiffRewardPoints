@@ -2,6 +2,8 @@ const router = require ('express').Router ();
 const points = require ('../dao/RewardPoints');
 const utils = require ('./utils');
 const qrcode = require ('qrcode');
+const config = require ('config');
+
 
 //建立卡片
 router.post ('/createCard', async(req, res) => {
@@ -39,12 +41,12 @@ router.get ('/manageCardList', async(req, res) => {
 router.post ('/manageCard', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     let json = await points.manageCard (req, res);
-    json.bgImage= utils.bufferToBase64(json.bgImage);
-    let pointImgsTemp=[];
-    for(let i = 0 ;i<json.pointImage.length;i++){
-      pointImgsTemp.push(utils.bufferToBase64(json.pointImage[i]));
+    json.bgImage = utils.bufferToBase64 (json.bgImage);
+    let pointImgsTemp = [];
+    for (let i = 0 ;i < json.pointImage.length;i ++){
+      pointImgsTemp.push (utils.bufferToBase64 (json.pointImage[i]));
     }
-    json.pointImage=pointImgsTemp;
+    json.pointImage = pointImgsTemp;
     if (json != null){
       res.send (utils.response (json ));
     } else {
@@ -54,15 +56,28 @@ router.post ('/manageCard', async(req, res) => {
 });
 
 
-//取得QRCode
+//取得送點 QRCode
 router.post ('/sendPoint', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
-    let getRandomCode = utils.getRandomCode ();
-    qrcode.toDataURL (getRandomCode, (err, qrCode) => {
-      res.send (utils.response (qrCode));
-
-    });
+    req.body.pointCode = utils.getRandomCode ();
+    let check = await points.createPoint (req, res);
+    if (check){
+      qrcode.toDataURL ('https://liff.line.me/' + config.get ('line.liffId') + '/getPoint/' + req.body.pointCode, (err, qrCode) => {
+        res.send (utils.response (qrCode));
+      });
+    }
+   
   }
 });
+
+//收點
+router.get ('/getPoint/:pointCode', async(req, res) => {
+
+  let json = await points.getPoint (req, res);
+  if (json != null){
+    res.send (utils.response (json ));
+  } else {
+    res.send (utils.response ('失敗', '0004'));
+  }});
 
 module.exports = router ;
