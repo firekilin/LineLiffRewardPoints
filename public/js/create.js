@@ -442,7 +442,8 @@ $ (() => {
           if (json.code == '0000'){
             window.location = '/';
           } else {
-            alert ('失敗');
+            alertModal.setBodyText (json.data);
+            alertModal.show ();
           }
         }, error: (error) => {
           console.log (error);

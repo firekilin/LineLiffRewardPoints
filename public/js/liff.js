@@ -139,14 +139,10 @@ let sendMessage = (gettext) => {
 let shareMessage = (mes) => {
   if (liff.isApiAvailable ('shareTargetPicker')) {
     liff.shareTargetPicker ([{ 'type': 'text',
-      'text': mes }]).then (
-      window.alert ('分享成功')
-    ).catch (function (res) {
-      window.alert ('分享失敗');
-    });
+      'text': mes }]);
   } else {
-    window.alert ('未允許此程式使用分享功能');
-  }
+    alertModal.setBodyText ('未允許此程式使用分享功能');
+    alertModal.show (); }
 };
  
 

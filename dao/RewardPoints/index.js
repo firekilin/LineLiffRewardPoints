@@ -202,12 +202,33 @@ exports.getPoint = async(req, res) => {
 /** 卡片清單 */
 exports.pointList = async(req, res) => {
   try {
-    let sql = `SELECT a.cardSeq,b.cardName,b.cardNum,b.cardExp,b.cardGift ,sum(a.pointNum) as pointNum
-      FROM reward_point.point as a 
-      left join reward_point.card as b 
-      on a.cardSeq=b.cardSeq  where a.pointUserno = ? 
-      group by a.cardSeq,b.cardName,b.cardNum,b.cardExp,b.cardGift`;
-    let values = [req.session.userId];
+    let sql = `SELECT 
+                    b.cardSeq,
+                    b.cardName,
+                    b.cardNum,
+                    b.cardExp,
+                    b.cardGift,
+                    SUM(a.pointNum) - COALESCE(MAX(m.pointNum), 0) AS pointNum
+                FROM 
+                    reward_point.point AS a 
+                LEFT JOIN 
+                    reward_point.card AS b ON a.cardSeq = b.cardSeq
+                LEFT JOIN 
+                    (SELECT 
+                        cardSeq,
+                        SUM(pointNum) AS pointNum 
+                    FROM 
+                        reward_point.point 
+                    WHERE 
+                        createUserno = ? AND status = 'm' 
+                    GROUP BY 
+                        cardSeq
+                    ) AS m ON a.cardSeq = m.cardSeq
+                WHERE 
+                    a.pointUserno = ? AND a.status in('e','m')
+                GROUP BY 
+                    b.cardSeq, b.cardName, b.cardNum, b.cardExp, b.cardGift;`;
+    let values = [req.session.userId, req.session.userId];
     let check = await query (sql, values);
     if (check){
       return check;
@@ -218,6 +239,85 @@ exports.pointList = async(req, res) => {
   }
 };
 
+
+/** 轉送點數 代碼 */
+exports.sharePoint = async(req, res) => {
+  try {
+    let sql = `SELECT 
+                    b.cardSeq,
+                    b.cardName,
+                    b.cardNum,
+                    b.cardExp,
+                    b.cardGift,
+                    SUM(a.pointNum) - COALESCE(MAX(m.pointNum), 0) AS pointNum
+                FROM 
+                    reward_point.point AS a 
+                LEFT JOIN 
+                    reward_point.card AS b ON a.cardSeq = b.cardSeq
+                LEFT JOIN 
+                    (SELECT 
+                        cardSeq,
+                        SUM(pointNum) AS pointNum 
+                    FROM 
+                        reward_point.point 
+                    WHERE 
+                        createUserno = ? AND status in ('m','g') 
+                    GROUP BY 
+                        cardSeq
+                    ) AS m ON a.cardSeq = m.cardSeq
+                WHERE 
+                    a.pointUserno = ? AND a.status in('e','m') and a.cardSeq = ?
+                GROUP BY 
+                    b.cardSeq, b.cardName, b.cardNum, b.cardExp, b.cardGift;`;
+    let values = [req.session.userId, req.session.userId, req.body.cardSeq];
+    let checkpoint = await query (sql, values);
+    if (checkpoint.length > 0 && checkpoint[0].pointNum >= req.body.pointNum){
+      sql = 'INSERT INTO reward_point.point SET ?';
+      values = {
+        cardSeq: req.body.cardSeq,
+        pointNum: req.body.pointNum,
+        pointCode: req.body.pointCode,
+        status: 'g',
+        createUserno: req.session.userId,
+        createUser: req.session.displayName,
+        modifyUserno: req.session.userId,
+        modifyUser: req.session.displayName,
+      };
+      check = await query (sql, values);
+      if (check){
+        return true;
+      }
+    }
+    return false;
+    
+  } catch (e){
+    return false;
+  }
+};
+
+
+/** 接收轉送點數 代碼 */
+exports.getSharePoint = async(req, res) => {
+  try {
+    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
+      left join reward_point.card as b on a.cardSeq=b.cardSeq  
+      where pointCode = ? and status = ? `;
+    values = [req.params.pointCode, 'g'];
+    let check = await query (sql, values);
+    if (check.length == 1){
+      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
+      values = [req.session.userId, 'm', null, req.session.userId, req.session.displayName, check[0].pointSeq];
+      let check2 = await query (sql, values);
+      if (check2){
+        return check[0];
+      }
+    } 
+    return null;
+
+  } catch (e){
+    return null;
+  }
+};
 
 
 module.exports = exports;

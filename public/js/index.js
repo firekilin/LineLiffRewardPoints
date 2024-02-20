@@ -57,7 +57,8 @@ let indexReady = () => {
                     alertModal.show ();
                     
                   } else {
-                    alert ('失敗');
+                    alertModal.setBodyText (json.data);
+                    alertModal.show ();
                   }
                 }, error: (error) => {
                   console.log (error);
@@ -149,12 +150,9 @@ let sharePoint = (point) => {
         'styles': { 'footer': { 'separator': true } }
       }
           
-    }]).then (
-      window.alert ('分享成功')
-    ).catch (function (res) {
-      window.alert ('分享失敗');
-    });
+    }]);
   } else {
-    window.alert ('未允許此程式使用分享功能');
+    alertModal.setBodyText ('未允許此程式使用分享功能');
+    alertModal.show ();
   }
 };

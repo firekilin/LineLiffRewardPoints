@@ -66,6 +66,13 @@ router.get ('/getPoint/:getPoint', async(req, res) => {
 
 });
 
+//收點 掃描操作
+router.get ('/getSharePoint/:getPoint', async(req, res) => {
+  const getPoint = req.params.getPoint;
+  res.render ('getSharePoint', { getPoint: getPoint });
+
+});
+
 //查看集點卡(使用者)
 router.get ('/pointList', async(req, res) => {
   res.render ('pointList');

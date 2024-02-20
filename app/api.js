@@ -93,6 +93,42 @@ router.get ('/getPoint/:pointCode', async(req, res) => {
   }});
 
 
+//轉送點 QRCode
+router.post ('/sharePoint', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    req.body.pointCode = utils.getRandomCode ();
+    let check = await points.sharePoint (req, res);
+    if (check){
+      let url = 'https://liff.line.me/' + config.get ('line.liffId') + '/getSharePoint/' + req.body.pointCode;
+      qrcode.toDataURL (url, (err, qrCode) => {
+        let json = {
+          img: qrCode,
+          url: url,
+          pointNum: req.body.pointNum,
+          cardName: req.body.cardName
+        };
+    
+        res.send (utils.response (json));
+      });
+    } else {
+      res.send (utils.response ('無法轉送，請確認是否有轉送中點數', '0004'));
+
+    }
+   
+  }
+});
+
+//收點 掃描操作 轉收
+router.get ('/getSharePoint/:pointCode', async(req, res) => {
+
+  let json = await points.getSharePoint (req, res);
+  if (json != null){
+    res.send (utils.response (json ));
+  } else {
+    res.send (utils.response ('無效點數', '0004'));
+  }});
+
+
 //取得卡片清單(使用者)
 router.get ('/pointList', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
