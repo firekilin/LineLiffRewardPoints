@@ -184,7 +184,7 @@ exports.getPoint = async(req, res) => {
       where pointCode = ? and status = ? `;
     values = [req.params.pointCode, 'w'];
     let check = await query (sql, values);
-    if (check){
+    if (check.length > 0){
       let sql = `UPDATE reward_point.point SET ?`;
       values = {
         pointUserno: req.session.userId,
@@ -197,10 +197,10 @@ exports.getPoint = async(req, res) => {
         return check;
       }
     } 
-    return false;
+    return null;
 
   } catch (e){
-    return false;
+    return null;
   }
 };
 

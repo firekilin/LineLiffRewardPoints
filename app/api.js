@@ -50,7 +50,7 @@ router.post ('/manageCard', async(req, res) => {
     }
     json.pointImage = pointImgsTemp;
 
-    
+
     if (json != null){
       res.send (utils.response (json ));
     } else {
@@ -66,8 +66,16 @@ router.post ('/sendPoint', async(req, res) => {
     req.body.pointCode = utils.getRandomCode ();
     let check = await points.createPoint (req, res);
     if (check){
-      qrcode.toDataURL ('https://liff.line.me/' + config.get ('line.liffId') + '/getPoint/' + req.body.pointCode, (err, qrCode) => {
-        res.send (utils.response (qrCode));
+      let url = 'https://liff.line.me/' + config.get ('line.liffId') + '/getPoint/' + req.body.pointCode;
+      qrcode.toDataURL (url, (err, qrCode) => {
+        let json = {
+          img: qrCode,
+          url: url,
+          pointNum: req.body.pointNum,
+          cardName: req.body.cardName
+        };
+    
+        res.send (utils.response (json));
       });
     }
    
@@ -81,7 +89,7 @@ router.get ('/getPoint/:pointCode', async(req, res) => {
   if (json != null){
     res.send (utils.response (json ));
   } else {
-    res.send (utils.response ('失敗', '0004'));
+    res.send (utils.response ('無效點數', '0004'));
   }});
 
 

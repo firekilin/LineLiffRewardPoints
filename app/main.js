@@ -57,4 +57,12 @@ router.get ('/manage/:id', async(req, res) => {
   const id = req.params.id;
   res.render ('edit', { id: id });
 });
+
+
+//收點 掃描操作
+router.get ('/getPoint/:getPoint', async(req, res) => {
+  const getPoint = req.params.getPoint;
+  res.render ('getPoint', { getPoint: getPoint });
+
+});
 module.exports = router;

@@ -1,0 +1,81 @@
+<!DOCTYPE html >
+<html data-bs-theme="dark">
+  <% let rootpath='../' %>
+<head>
+    <title>集點</title>
+  <meta name="viewport" content="width=device-width, initial-scale=yes, user-scalable=yes">
+
+  <!--jquery-->
+  <script src="<%=rootpath %>plugins/jquery/dist/jquery.min.js"></script>
+  <!--bootstrap-->
+  <link href="<%=rootpath %>plugins/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="<%=rootpath %>plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="<%=rootpath %>plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <link href="<%=rootpath %>public/css/object.css" rel="stylesheet" />
+
+
+</head>
+
+<body>
+    <!--頁面主程式-->
+    <script src="<%=rootpath %>public/js/object.js"></script>
+    <!--登入程式及自製套件-->
+    <script src="<%=rootpath %>public/js/utils.js"></script>
+
+
+    <script>
+     
+      let getPoint=()=>{
+        if('<%= getPoint%>'!=''){
+          $.ajax (
+          {
+            url: '/api/getPoint/<%= getPoint%>',
+            method: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            success: (json) => {
+              if(json.code=='0000'){
+                alertModal.setBodyText("成功獲得，"+json.data.cardName+":"+json.data.pointNum+"點");
+                alertModal.getFooter ().empty ();                
+                //close
+                let close = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">關閉</button>');
+                close.on ('click', () => {
+                  window.location="/";
+                });
+                alertModal.getFooter ().append (close);
+                alertModal.show ();  
+              }else{
+                alertModal.setBodyText(json.data);
+                alertModal.getFooter ().empty ();                
+                //close
+                let close = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">關閉</button>');
+                close.on ('click', () => {
+                  window.location="/";
+                });
+                alertModal.getFooter ().append (close);
+                alertModal.show ();              
+              }
+            }, error: (error) => {
+              window.location="/";
+
+            } 
+          });
+
+        }else{
+          window.location="/";
+        }
+      }      
+    </script>
+
+
+    <script src="<%=rootpath %>public/js/getPoint.js"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="<%=rootpath %>public/js/liff.js"></script>
+
+
+
+
+</body>
+
+</html>

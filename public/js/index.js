@@ -35,10 +35,14 @@ let indexReady = () => {
                 method: 'POST',
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',          
-                data: JSON.stringify ({ cardSeq: json.data[i].cardSeq, pointNum: pointSelect.val () }),
+                data: JSON.stringify ({
+                  cardSeq: json.data[i].cardSeq,
+                  cardName: json.data[i].cardName,
+                  pointNum: pointSelect.val () 
+                }),
                 success: async (json) => {
                   if (json.code == '0000'){
-                    let img = await base64ToImage (json.data);
+                    let img = await base64ToImage (json.data.img);
                     alertModal.getBody ().empty ();
                     alertModal.getBody ().append (img);
                     alertModal.getFooter ().empty ();
@@ -47,7 +51,7 @@ let indexReady = () => {
                     //分享
                     let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
                     share.on ('click', () => {
-                      shareMessage ('test');
+                      sharePoint (json.data);
                     });
                     alertModal.getFooter ().append (share);
                     alertModal.show ();
@@ -79,4 +83,78 @@ let indexReady = () => {
       } 
     });
   
+};
+
+
+
+//送點數訊息
+let sharePoint = (point) => {
+  if (liff.isApiAvailable ('shareTargetPicker')) {
+    liff.shareTargetPicker ([{
+      'type': 'flex',
+      'altText': '冰塊 集點站 傳送點數',
+      'contents':
+
+      {
+        'type': 'bubble',
+        'body': {
+          'type': 'box',
+          'layout': 'vertical',
+          'contents': [
+            {
+              'type': 'text',
+              'text': '冰塊 集點站',
+              'weight': 'bold',
+              'size': 'xxl',
+              'margin': 'md',
+              'align': 'center'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'text',
+              'text': point.cardName,
+              'align': 'center',
+              'margin': 'md',
+              'size': 'xl'
+            },
+            {
+              'type': 'text',
+              'text': point.pointNum + ' 點',
+              'align': 'center',
+              'size': 'xl',
+              'margin': 'md',
+              'color': '#FF0000'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'box',
+              'layout': 'horizontal',
+              'margin': 'md',
+              'contents': [
+                { 'type': 'button',
+                  'action': {
+                    'type': 'uri',
+                    'label': '領取',
+                    'uri': point.url
+                  } }
+              ],
+              'borderColor': '#0080FF',
+              'borderWidth': '1px',
+              'cornerRadius': '50px'
+            }
+          ]
+        },
+        'styles': { 'footer': { 'separator': true } }
+      }
+          
+    }]).then (
+      window.alert ('分享成功')
+    ).catch (function (res) {
+      window.alert ('分享失敗');
+    });
+  } else {
+    window.alert ('未允許此程式使用分享功能');
+  }
 };
