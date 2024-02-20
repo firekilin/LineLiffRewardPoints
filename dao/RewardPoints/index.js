@@ -184,21 +184,35 @@ exports.getPoint = async(req, res) => {
       where pointCode = ? and status = ? `;
     values = [req.params.pointCode, 'w'];
     let check = await query (sql, values);
-    if (check.length > 0){
-      let sql = `UPDATE reward_point.point SET ?`;
-      values = {
-        pointUserno: req.session.userId,
-        status: 'e',
-        modifyUserno: req.session.userId,
-        modifyUser: req.session.displayName,
-      };
+    if (check.length == 1){
+      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
+      values = [req.session.userId, 'e', null, req.session.userId, req.session.displayName, check[0].pointSeq];
       let check2 = await query (sql, values);
       if (check2){
-        return check;
+        return check[0];
       }
     } 
     return null;
 
+  } catch (e){
+    return null;
+  }
+};
+
+/** 卡片清單 */
+exports.pointList = async(req, res) => {
+  try {
+    let sql = `SELECT a.cardSeq,b.cardName,b.cardNum,b.cardExp,b.cardGift ,sum(a.pointNum) as pointNum
+      FROM reward_point.point as a 
+      left join reward_point.card as b 
+      on a.cardSeq=b.cardSeq  where a.pointUserno = ? 
+      group by a.cardSeq,b.cardName,b.cardNum,b.cardExp,b.cardGift`;
+    let values = [req.session.userId];
+    let check = await query (sql, values);
+    if (check){
+      return check;
+    }
+    return null;
   } catch (e){
     return null;
   }

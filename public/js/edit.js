@@ -1,7 +1,7 @@
 let showcard = (id) => {
   $.ajax (
     {
-      url: '/api/manageCard',
+      url: '/api/showCard',
       method: 'POST',
       dataType: 'json',
       contentType: 'application/json;charset=utf-8',

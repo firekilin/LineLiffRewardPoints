@@ -65,4 +65,10 @@ router.get ('/getPoint/:getPoint', async(req, res) => {
   res.render ('getPoint', { getPoint: getPoint });
 
 });
+
+//查看集點卡(使用者)
+router.get ('/pointList', async(req, res) => {
+  res.render ('pointList');
+
+});
 module.exports = router;

@@ -39,8 +39,8 @@ router.get ('/manageCardList', async(req, res) => {
   }
 });
 
-//取得管理卡片詳細
-router.post ('/manageCard', async(req, res) => {
+//取得卡片詳細
+router.post ('/showCard', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     let json = await points.manageCard (req, res);
     json.bgImage = utils.bufferToBase64 (json.bgImage);
@@ -91,6 +91,19 @@ router.get ('/getPoint/:pointCode', async(req, res) => {
   } else {
     res.send (utils.response ('無效點數', '0004'));
   }});
+
+
+//取得卡片清單(使用者)
+router.get ('/pointList', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    let json = await points.pointList (req, res);
+    if (json != null){
+      res.send (utils.response (json ));
+    } else {
+      res.send (utils.response ('查詢失敗', '0004'));
+    }
+  }
+});
 
 
 module.exports = router ;
