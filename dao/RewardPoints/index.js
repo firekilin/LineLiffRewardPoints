@@ -301,8 +301,8 @@ exports.getSharePoint = async(req, res) => {
   try {
     let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
       left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where pointCode = ? and status = ? `;
-    values = [req.params.pointCode, 'g'];
+      where pointCode = ? and status = ? ans createDate <> ? `;
+    values = [req.params.pointCode, 'g', req.session.userId];
     let check = await query (sql, values);
     if (check.length == 1){
       let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
@@ -311,6 +311,46 @@ exports.getSharePoint = async(req, res) => {
       if (check2){
         return check[0];
       }
+    } 
+    return null;
+
+  } catch (e){
+    return null;
+  }
+};
+
+
+/** 使用者查看詳細卡片來源 */
+exports.pointDetail = async(req, res) => {
+  try {
+    let sql = `SELECT  pointNum,pointUserno,status,createUserno,modifydate,createdate FROM reward_point.point 
+    where cardSeq= ?
+    and ((pointUserno = ? and status in('e','m')) 
+    or (createUserno = ? and status in('g','m'))) ; `;
+    values = [req.body.cardSeq, req.session.userId, req.session.userId];
+    let check = await query (sql, values);
+    if (check.length > 1){
+      for (let i = 0;i < check.length;i ++){
+        if (check[i].pointUserno == req.session.userId && check[i].status == 'e'){
+          check[i].status = '接收';
+          check[i].date = check[i].modifydate;
+        } else if (check[i].pointUserno == req.session.userId && check[i].status == 'm'){
+          check[i].status = '轉收';
+          check[i].date = check[i].modifydate;
+
+        } else if (check[i].createUserno == req.session.userId && check[i].status == 'g'){
+          check[i].status = '轉送中';
+          check[i].date = check[i].createdate;
+        } else if (check[i].createUserno == req.session.userId && check[i].status == 'm'){
+          check[i].status = '已轉送';
+          check[i].date = check[i].createdate;
+
+        }
+      }
+
+
+
+      return check;
     } 
     return null;
 

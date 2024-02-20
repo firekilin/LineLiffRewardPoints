@@ -12,6 +12,7 @@ let showcard = (id, pointNum) => {
         alertModal.getBody ().empty ();
         alertModal.getBody ().append (canvas);
         alertModal.show ();
+
         let maxWidth = alertModal.getBody ().width ();
         let ctx = canvas.getContext ('2d');
         let bgImage = await base64ToImage (json.data.bgImage);
@@ -31,6 +32,38 @@ let showcard = (id, pointNum) => {
           let pos = position[i];
           ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
         }
+
+      
+        $.ajax (
+          {
+            url: '/api/pointDetail',
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify ({ cardSeq: id }),
+            success: async(json) => {
+              let table = $ (' <table class="table  table-striped">');
+              table.append ($ (`<thead>
+                                <tr>
+                                  <th scope="col">點數</th>
+                                  <th scope="col">狀態</th>
+                                  <th scope="col">時間</th>
+                                </tr>
+                              </thead>`));
+              let tbody = $ ('<tbody>');
+              for (let i = 0;i < json.data.length;i ++){
+                let tr = $ ('<tr>');
+                tr.append ($ ('td').text (json.data[i].pointNum));
+                tr.append ($ ('td').text (json.data[i].status));
+                tr.append ($ ('td').text ((new Date (json.data[i].date)).toLocaleDateString ()));
+                tbody.append (tr);
+              }
+              table.append (tbody);
+              alertModal.getBody ().append (table);
+
+            }, error: (error) => {
+            } 
+          });
         
       }, error: (error) => {
       } 
@@ -54,6 +87,7 @@ let indexReady = () => {
           cardBody.append ($ ('<div class="col-sm-4">').text ('截止日：' + (json.data[i].cardExp == null ? '' : (new Date (json.data[i].cardExp)).toLocaleDateString ())));
           cardBody.append ($ ('<a  class="col-sm-6 btn btn-secondary mb-3 mb-sm-0">').text ('查看').on ('click', () => {
             showcard (json.data[i].cardSeq, json.data[i].pointNum);
+
           }));
           let setpoint = $ ('<div class="col-sm-6 row mb-3 mb-sm-0">');
           if (json.data[i].cardGift == 'e'){
