@@ -137,6 +137,12 @@ exports.manageCard = async(req, res) => {
       }
       json.pointImage = pointImage;
     }
+    sql = 'SELECT  pointNum,createdate,status  FROM reward_point.point where cardSeq = ? and createUserno = ? ';
+    values = [req.body.cardSeq, req.session.userId];
+    check = await query (sql, values);
+    if (check){
+      json.sendPoint = check;
+    }
     return json;
   } catch (e){
     return null;

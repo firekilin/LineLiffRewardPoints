@@ -9,7 +9,9 @@ const config = require ('config');
 router.post ('/createCard', async(req, res) => {
   req.body.bgImage = utils.base64ToBuffer (req.body.bgImage);
   req.body.pointImage = utils.base64ToBuffer (req.body.pointImage);
-  req.body.pointOver = utils.base64ToBuffer (req.body.pointOver);
+  if (req.body.pointOver != null){
+    req.body.pointOver = utils.base64ToBuffer (req.body.pointOver);
+  }
   req.body.pointImgsTemp = [];
   for (let i = 0;i < req.body.pointImgs.length;i ++){
     let tempfile = utils.base64ToBuffer (req.body.pointImgs[i]);
@@ -30,14 +32,14 @@ router.post ('/createCard', async(req, res) => {
   } 
 });
 
-//取得卡片清單
+//取得管理卡片清單
 router.get ('/manageCardList', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     res.send (utils.response ( await points.manageCardList (req, res)));
   }
 });
 
-//取得卡片詳細
+//取得管理卡片詳細
 router.post ('/manageCard', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     let json = await points.manageCard (req, res);
@@ -47,6 +49,8 @@ router.post ('/manageCard', async(req, res) => {
       pointImgsTemp.push (utils.bufferToBase64 (json.pointImage[i]));
     }
     json.pointImage = pointImgsTemp;
+
+    
     if (json != null){
       res.send (utils.response (json ));
     } else {
@@ -56,7 +60,7 @@ router.post ('/manageCard', async(req, res) => {
 });
 
 
-//取得送點 QRCode
+//送點 QRCode
 router.post ('/sendPoint', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     req.body.pointCode = utils.getRandomCode ();
@@ -70,7 +74,7 @@ router.post ('/sendPoint', async(req, res) => {
   }
 });
 
-//收點
+//收點 掃描操作
 router.get ('/getPoint/:pointCode', async(req, res) => {
 
   let json = await points.getPoint (req, res);
@@ -79,5 +83,6 @@ router.get ('/getPoint/:pointCode', async(req, res) => {
   } else {
     res.send (utils.response ('失敗', '0004'));
   }});
+
 
 module.exports = router ;

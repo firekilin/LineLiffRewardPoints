@@ -63,7 +63,6 @@ let initializeApp = () => {
         contentType: 'application/json;charset=utf-8',          
         data: JSON.stringify ({ accessToken: liff.getAccessToken () }),
         success: (jsonResponse) => {
-          alert (JSON.stringify (jsonResponse));
           if (jsonResponse.code == '0000'){
             $ ('#LineStatus').find ('.card-body').text ('登入成功');
   

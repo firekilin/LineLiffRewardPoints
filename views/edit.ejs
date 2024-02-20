@@ -22,16 +22,29 @@
         <script src="<%=rootpath %>public/js/object.js"></script>
         <!--登入程式及自製套件-->
         <script src="<%=rootpath %>public/js/utils.js"></script>
-        <script src="<%=rootpath %>public/js/show.js"></script>
+        <script src="<%=rootpath %>public/js/edit.js"></script>
 
 
 
 
         <main id="main" class="container">
             <canvas id="canvas" width="400" height="400"></canvas>
+            <div id="content"></div>
+            <table class="table  table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">點數</th>
+                    <th scope="col">狀態</th>
+                    <th scope="col">時間</th>
+                  </tr>
+                </thead>
+                <tbody id="pointTable">
+                 
+                </tbody>
+              </table>
         </main>
-
-
+        
+       
         <script>
             showcard("<%=id %>");
         </script>
