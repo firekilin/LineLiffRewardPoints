@@ -41,15 +41,15 @@ let indexReady = () => {
                     let img = await base64ToImage (json.data);
                     alertModal.getBody ().empty ();
                     alertModal.getBody ().append (img);
-                    alertModal.getfooter ().empty ();
-                    alertModal.getfotter ().append (alertModal.getClostBtn ());
+                    alertModal.getFooter ().empty ();
+                    alertModal.getFooter ().append (alertModal.getCloseBtn ());
                     
                     //分享
                     let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
                     share.on ('click', () => {
-                      shareMessage (test);
+                      shareMessage ('test');
                     });
-                    alertModal.getfotter ().append (share);
+                    alertModal.getFooter ().append (share);
                     alertModal.show ();
                     
                   } else {

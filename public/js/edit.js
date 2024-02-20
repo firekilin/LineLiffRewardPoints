@@ -30,7 +30,8 @@ let showcard = (id) => {
         let notGet = 0;
         let get = 0;
         for (let i = 0;i < json.data.sendPoint.length;i ++){
-          $ ('#pointTable').append ($ ('<td>').text (json.data.sendPoint[i].pointNum));
+          let tableTr = $ ('<tr>');
+          tableTr.append ($ ('<td>').text (json.data.sendPoint[i].pointNum));
           let status = json.data.sendPoint[i].status;
           if (status == 'w'){
             status = '待收取';
@@ -39,9 +40,9 @@ let showcard = (id) => {
             status = '已收取';
             get += parseInt (json.data.sendPoint[i].pointNum);
           }
-          $ ('#pointTable').append ($ ('<td>').text (status));
-          $ ('#pointTable').append ($ ('<td>').text ((new Date (json.data.sendPoint[i].createdate)).toLocaleDateString ()));
-
+          tableTr.append ($ ('<td>').text (status));
+          tableTr.append ($ ('<td>').text ((new Date (json.data.sendPoint[i].createdate)).toLocaleDateString ()));
+          $ ('#pointTable').append (tableTr);
         }
         $ ('#content').text (`待收取:${notGet}    已收取:${get} `);
       }, error: (error) => {
