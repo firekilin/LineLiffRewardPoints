@@ -51,14 +51,30 @@ let showcard = (id, pointNum) => {
                                 </tr>
                               </thead>`));
               let tbody = $ ('<tbody>');
+              let point = {
+                get: 0, getShare: 0, waitShare: 0, sendShare: 0
+              };
               for (let i = 0;i < json.data.length;i ++){
-                let tr = $ ('<tr>');
-                tr.append ($ ('td').text (json.data[i].pointNum));
-                tr.append ($ ('td').text (json.data[i].status));
-                tr.append ($ ('td').text ((new Date (json.data[i].date)).toLocaleDateString ()));
-                tbody.append (tr);
+                if (json.data[i].status == '接收'){
+                  point.get += parseInt (json.data[i].pointNum);
+                } else if (json.data[i].status == '轉收'){
+                  point.getShare += parseInt (json.data[i].pointNum);
+                } else if (json.data[i].status == '待轉送'){
+                  point.waitShare += parseInt (json.data[i].pointNum);
+                } else if (json.data[i].status == '已轉送'){
+                  point.sendShare += parseInt (json.data[i].pointNum);
+                } 
+                tbody.append ($ (`
+                  <tr>
+                    <td>${json.data[i].pointNum}</td>
+                    <td>${json.data[i].status}</td>
+                    <td>${(new Date (json.data[i].date)).toLocaleDateString ()}</td>
+                  </tr>
+                `));
               }
               table.append (tbody);
+              alertModal.getBody ().append (`接收: ${point.get}   轉收: ${point.getShare}   待轉收: ${point.waitShare}   已轉送: ${point.sendShare}`);
+
               alertModal.getBody ().append (table);
 
             }, error: (error) => {

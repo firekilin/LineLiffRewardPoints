@@ -55,7 +55,7 @@ loading.show ();
 class modal{
   constructor(){
     this.main = $ ('<div class="modal">');
-    let dialog = $ ('<div class="modal-dialog modal-dialog-centered">');
+    let dialog = $ ('<div class="modal-dialog modal-dialog-centered modal-fullscreen ">');
     this.main.append (dialog);
     let mainBox = $ ('<div class="modal-content">');
     dialog.append (mainBox);
@@ -65,7 +65,7 @@ class modal{
     this.topclose = $ (' <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>');
     this.header.append (this.topclose);
     //內容
-    this.body = $ ('<div class="modal-body">').text ('test');
+    this.body = $ ('<div class="modal-body overflow-y-auto overflow-x-hidden">').text ('test');
     //按鈕
     this.footer = $ ('<div class="modal-footer">');
     this.closebtn = $ ('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>');

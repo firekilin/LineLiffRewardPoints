@@ -142,7 +142,7 @@ router.get ('/pointList', async(req, res) => {
 });
 
 //取得卡片詳細(使用者)
-router.get ('/pointDetail', async(req, res) => {
+router.post ('/pointDetail', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     let json = await points.pointDetail (req, res);
     if (json != null){
