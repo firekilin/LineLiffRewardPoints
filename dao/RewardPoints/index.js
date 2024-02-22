@@ -181,9 +181,9 @@ exports.createPoint = async(req, res) => {
 /** 接收點數 代碼 */
 exports.getPoint = async(req, res) => {
   try {
-    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
+    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum,a.createUserno FROM reward_point.point as a 
       left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where pointCode = ? and status = ? and createUserno <> ? `;
+      where pointCode = ? and status = ? and a.createUserno <> ? `;
     values = [req.params.pointCode, 'w', req.session.userId];
     let check = await query (sql, values);
     if (check.length == 1){
