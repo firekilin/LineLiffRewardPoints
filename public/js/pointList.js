@@ -7,31 +7,41 @@ let showcard = (id, pointNum) => {
       contentType: 'application/json;charset=utf-8',
       data: JSON.stringify ({ cardSeq: id }),
       success: async(json) => {
-
-        let canvas = $ ('<canvas id="canvas" width="400" height="400"></canvas>')[0];
         alertModal.getBody ().empty ();
-        alertModal.getBody ().append (canvas);
         alertModal.show ();
-
-        let maxWidth = alertModal.getBody ().width ();
-        let ctx = canvas.getContext ('2d');
-        let bgImage = await base64ToImage (json.data.bgImage);
-        let scale = 1;
-        if (bgImage.width > maxWidth) {
-          scale = (maxWidth / bgImage.width);
+        let cardPage = Math.ceil (pointNum / json.data.cardNum);
+        for (let i = 0;i < cardPage;i ++){
+          let canvas = $ ('<canvas id="canvas" width="400" height="400"></canvas>')[0];
+          alertModal.getBody ().append (canvas);
+          let maxWidth = alertModal.getBody ().width ();
+          let ctx = canvas.getContext ('2d');
+          let bgImage = await base64ToImage (json.data.bgImage);
+          let scale = 1;
+          if (bgImage.width > maxWidth) {
+            scale = (maxWidth / bgImage.width);
+          }
+          canvas.width = (bgImage.width * scale);
+          canvas.height = (bgImage.height * scale);
+          ctx.drawImage (bgImage, 0, 0, canvas.width, canvas.height); 
+          let pointImage = [];
+          for (let j = 0;j < json.data.pointImage.length;j ++){
+            pointImage.push (await base64ToImage (json.data.pointImage[j]));
+          }
+          let position = JSON.parse (json.data.cardPosition);
+          if (pointNum > json.data.cardNum){
+            for (let j = 0;j < json.data.cardNum;j ++){
+              let pos = position[j];
+              ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
+            }
+          } else {
+            for (let j = 0;j < pointNum;j ++){
+              let pos = position[j];
+              ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
+            }
+          }
+          pointNum = pointNum - json.data.cardNum;
         }
-        canvas.width = (bgImage.width * scale);
-        canvas.height = (bgImage.height * scale);
-        ctx.drawImage (bgImage, 0, 0, canvas.width, canvas.height); 
-        let pointImage = [];
-        for (let i = 0;i < json.data.pointImage.length;i ++){
-          pointImage.push (await base64ToImage (json.data.pointImage[i]));
-        }
-        let position = JSON.parse (json.data.cardPosition);
-        for (let i = 0;i < pointNum;i ++){
-          let pos = position[i];
-          ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
-        }
+       
 
       
         $.ajax (

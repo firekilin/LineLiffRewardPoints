@@ -115,11 +115,13 @@ exports.manageCardList = async(req, res) => {
 exports.manageCard = async(req, res) => {
   let json = {};
   try {
-    let sql = 'SELECT cardPosition FROM reward_point.card where ? ';
+    let sql = 'SELECT cardPosition,cardNum FROM reward_point.card where ? ';
     let values = { cardSeq: req.body.cardSeq };
     let check = await query (sql, values);
     if (check){
       json.cardPosition = check[0].cardPosition;
+      json.cardNum = check[0].cardNum;
+
     }
     sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
     values = [req.body.cardSeq, '1'];
