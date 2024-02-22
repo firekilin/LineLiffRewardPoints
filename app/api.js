@@ -153,4 +153,41 @@ router.post ('/pointDetail', async(req, res) => {
   }
 });
 
+
+//兌換 QRCode
+router.post ('/wantWard', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    req.body.pointCode = utils.getRandomCode ();
+    let check = await points.wantWard (req, res);
+    if (check){
+      let url = 'https://liff.line.me/' + config.get ('line.liffId') + '/sendWard/' + req.body.pointCode;
+      qrcode.toDataURL (url, (err, qrCode) => {
+        let json = {
+          img: qrCode,
+          url: url,
+          pointNum: req.body.pointNum,
+          cardName: req.body.cardName
+        };
+    
+        res.send (utils.response (json));
+      });
+    } else {
+      res.send (utils.response ('無法兌換，請確認點數充足 或 是否有轉送中點數', '0004'));
+
+    }
+   
+  }
+});
+
+//收點 掃描操作 轉收
+router.get ('/snedWard/:pointCode', async(req, res) => {
+
+  let json = await points.sendWard (req, res);
+  if (json != null){
+    res.send (utils.response (json ));
+  } else {
+    res.send (utils.response ('無效兌換', '0004'));
+  }});
+
+
 module.exports = router ;

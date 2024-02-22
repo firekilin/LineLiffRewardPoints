@@ -62,17 +62,24 @@ let showcard = (id, pointNum) => {
                               </thead>`));
               let tbody = $ ('<tbody>');
               let point = {
-                get: 0, getShare: 0, waitShare: 0, sendShare: 0
+                get: 0, getShare: 0, waitShare: 0, sendShare: 0, ward: 0
               };
               for (let i = 0;i < json.data.length;i ++){
                 if (json.data[i].status == '接收'){
                   point.get += parseInt (json.data[i].pointNum);
+                  json.data[i].pointNum = '+' + json.data[i].pointNum;
                 } else if (json.data[i].status == '轉收'){
                   point.getShare += parseInt (json.data[i].pointNum);
+                  json.data[i].pointNum = '+' + json.data[i].pointNum;
                 } else if (json.data[i].status == '待轉送'){
                   point.waitShare += parseInt (json.data[i].pointNum);
                 } else if (json.data[i].status == '已轉送'){
                   point.sendShare += parseInt (json.data[i].pointNum);
+                  json.data[i].pointNum = '-' + json.data[i].pointNum;
+                } else if (json.data[i].status == '已兌換'){
+                  point.ward += parseInt (json.data[i].pointNum);
+                  json.data[i].pointNum = '-' + json.data[i].pointNum;
+
                 } 
                 tbody.append ($ (`
                   <tr>
@@ -83,7 +90,7 @@ let showcard = (id, pointNum) => {
                 `));
               }
               table.append (tbody);
-              alertModal.getBody ().append (`接收: ${point.get}   轉收: ${point.getShare}   待轉收: ${point.waitShare}   已轉送: ${point.sendShare}`);
+              alertModal.getBody ().append (`目前點數:${pointNum}  接收: ${point.get}   轉收: ${point.getShare}   待轉收: ${point.waitShare}   已轉送: ${point.sendShare}   已兌換: ${point.ward}`);
 
               alertModal.getBody ().append (table);
 

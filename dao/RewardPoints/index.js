@@ -139,7 +139,8 @@ exports.manageCard = async(req, res) => {
       }
       json.pointImage = pointImage;
     }
-    sql = 'SELECT  pointNum,createdate,status  FROM reward_point.point where cardSeq = ? and createUserno = ? ';
+    sql = `SELECT  pointNum,createdate,status  
+      FROM reward_point.point where cardSeq = ? and (createUserno = ? or pointUserno= 'u') `;
     values = [req.body.cardSeq, req.session.userId];
     check = await query (sql, values);
     if (check){
@@ -176,7 +177,6 @@ exports.createPoint = async(req, res) => {
     return false;
   }
 };
-
 
 /** 接收點數 代碼 */
 exports.getPoint = async(req, res) => {
@@ -263,7 +263,7 @@ exports.sharePoint = async(req, res) => {
                     FROM 
                         reward_point.point 
                     WHERE 
-                        createUserno = ? AND status in ('m','g') 
+                        createUserno = ? AND status in ('m','g','u') 
                     GROUP BY 
                         cardSeq
                     ) AS m ON a.cardSeq = m.cardSeq
@@ -273,7 +273,7 @@ exports.sharePoint = async(req, res) => {
                     b.cardSeq, b.cardName, b.cardNum, b.cardExp, b.cardGift;`;
     let values = [req.session.userId, req.session.userId, req.body.cardSeq];
     let checkpoint = await query (sql, values);
-    if (checkpoint.length > 0 && checkpoint[0].pointNum >= req.body.pointNum){
+    if (checkpoint.length == 1 && checkpoint[0].pointNum >= req.body.pointNum){
       sql = 'INSERT INTO reward_point.point SET ?';
       values = {
         cardSeq: req.body.cardSeq,
@@ -328,10 +328,11 @@ exports.pointDetail = async(req, res) => {
     let sql = `SELECT  pointNum,pointUserno,status,createUserno,modifydate,createdate FROM reward_point.point 
     where cardSeq= ?
     and ((pointUserno = ? and status in('e','m')) 
-    or (createUserno = ? and status in('g','m'))) ; `;
+    or (createUserno = ? and status in('g','m','u'))) ; `;
     values = [req.body.cardSeq, req.session.userId, req.session.userId];
     let check = await query (sql, values);
-    if (check.length > 1){
+  
+    if (check.length > 0){
       for (let i = 0;i < check.length;i ++){
         if (check[i].pointUserno == req.session.userId && check[i].status == 'e'){
           check[i].status = '接收';
@@ -339,12 +340,14 @@ exports.pointDetail = async(req, res) => {
         } else if (check[i].pointUserno == req.session.userId && check[i].status == 'm'){
           check[i].status = '轉收';
           check[i].date = check[i].modifydate;
-
         } else if (check[i].createUserno == req.session.userId && check[i].status == 'g'){
           check[i].status = '轉送中';
           check[i].date = check[i].createdate;
         } else if (check[i].createUserno == req.session.userId && check[i].status == 'm'){
           check[i].status = '已轉送';
+          check[i].date = check[i].createdate;
+        } else if (check[i].createUserno == req.session.userId && check[i].status == 'u'){
+          check[i].status = '已兌換';
           check[i].date = check[i].createdate;
 
         }
@@ -353,6 +356,88 @@ exports.pointDetail = async(req, res) => {
 
 
       return check;
+    } 
+    return null;
+
+  } catch (e){
+    return null;
+  }
+};
+
+
+/** 兌換清單 */
+
+/** 兌換 產生代碼 */
+exports.wantWard = async(req, res) => {
+  try {
+    let sql = `SELECT 
+                    b.cardSeq,
+                    b.cardName,
+                    b.cardNum,
+                    b.cardExp,
+                    b.cardGift,
+                    SUM(a.pointNum) - COALESCE(MAX(m.pointNum), 0) AS pointNum
+                FROM 
+                    reward_point.point AS a 
+                LEFT JOIN 
+                    reward_point.card AS b ON a.cardSeq = b.cardSeq
+                LEFT JOIN 
+                    (SELECT 
+                        cardSeq,
+                        SUM(pointNum) AS pointNum 
+                    FROM 
+                        reward_point.point 
+                    WHERE 
+                        createUserno = ? AND status in ('m','g','u') 
+                    GROUP BY 
+                        cardSeq
+                    ) AS m ON a.cardSeq = m.cardSeq
+                WHERE 
+                    a.pointUserno = ? AND a.status in('e','m') and a.cardSeq = ?
+                GROUP BY 
+                    b.cardSeq, b.cardName, b.cardNum, b.cardExp, b.cardGift;`;
+    let values = [req.session.userId, req.session.userId, req.body.cardSeq];
+    let checkpoint = await query (sql, values);
+    if (checkpoint.length == 1 && checkpoint[0].pointNum >= checkpoint[0].cardNum){
+      sql = 'INSERT INTO reward_point.point SET ?';
+      values = {
+        cardSeq: req.body.cardSeq,
+        pointNum: checkpoint[0].cardNum,
+        pointCode: req.body.pointCode,
+        status: 'r',
+        createUserno: req.session.userId,
+        createUser: req.session.displayName,
+        modifyUserno: req.session.userId,
+        modifyUser: req.session.displayName,
+      };
+      check = await query (sql, values);
+      if (check){
+        return true;
+      }
+    }
+    return false;
+    
+  } catch (e){
+    return false;
+  }
+};
+
+
+/** 兌換 代碼 */
+exports.sendWard = async(req, res) => {
+  try {
+    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
+      left join reward_point.card as b on a.cardSeq=b.cardSeq  
+      where pointCode = ? and status = ? ans createDate <> ? `;
+    values = [req.params.pointCode, 'u', req.session.userId];
+    let check = await query (sql, values);
+    if (check.length == 1){
+      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
+      values = [req.session.userId, 'm', null, req.session.userId, req.session.displayName, check[0].pointSeq];
+      let check2 = await query (sql, values);
+      if (check2){
+        return check[0];
+      }
     } 
     return null;
 

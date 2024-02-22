@@ -73,9 +73,19 @@ router.get ('/getSharePoint/:getPoint', async(req, res) => {
 
 });
 
+
+
 //查看集點卡(使用者)
 router.get ('/pointList', async(req, res) => {
   res.render ('pointList');
 
 });
+
+//兌換 掃描操作
+router.get ('/sendWard/:getWard', async(req, res) => {
+  const getWard = req.params.getWard;
+  res.render ('sendWard', { getWard: getWard });
+
+});
+
 module.exports = router;

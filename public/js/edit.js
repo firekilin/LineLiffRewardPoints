@@ -26,25 +26,30 @@ let showcard = (id) => {
           ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
         });
 
-        
-        let notGet = 0;
-        let get = 0;
+        let point = {
+          notGet: 0, get: 0, complete: 0
+        };
+
         for (let i = 0;i < json.data.sendPoint.length;i ++){
           let tableTr = $ ('<tr>');
-          tableTr.append ($ ('<td>').text (json.data.sendPoint[i].pointNum));
           let status = json.data.sendPoint[i].status;
           if (status == 'w'){
             status = '待收取';
-            notGet += parseInt (json.data.sendPoint[i].pointNum);
-          } else {
-            status = '已收取';
-            get += parseInt (json.data.sendPoint[i].pointNum);
+            point.notGet += parseInt (json.data.sendPoint[i].pointNum);
+          } else if (status == 'e') {
+            status = '已發送';
+            point.get += parseInt (json.data.sendPoint[i].pointNum);
+          } else if (status == 'u'){
+            status = '已兌換';
+            point.complete += parseInt (json.data.sendPoint[i].pointNum); 
+            json.data.sendPoint[i].pointNum = '-' + json.data.sendPoint[i].pointNum;
           }
+          tableTr.append ($ ('<td>').text (json.data.sendPoint[i].pointNum));
           tableTr.append ($ ('<td>').text (status));
           tableTr.append ($ ('<td>').text ((new Date (json.data.sendPoint[i].createdate)).toLocaleDateString ()));
           $ ('#pointTable').append (tableTr);
         }
-        $ ('#content').text (`待收取:${notGet}    已收取:${get} `);
+        $ ('#content').text (`待收取:${point.notGet}    已發送:${point.get}  已兌換:${point.complete}  待兌換:${point.get - point.complete} `);
       }, error: (error) => {
       } 
     });
