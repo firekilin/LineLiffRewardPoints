@@ -183,8 +183,8 @@ exports.getPoint = async(req, res) => {
   try {
     let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
       left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where pointCode = ? and status = ? `;
-    values = [req.params.pointCode, 'w'];
+      where pointCode = ? and status = ? and createUserno <> ? `;
+    values = [req.params.pointCode, 'w', req.session.userId];
     let check = await query (sql, values);
     if (check.length == 1){
       let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
