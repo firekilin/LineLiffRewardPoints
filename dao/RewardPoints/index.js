@@ -432,7 +432,7 @@ exports.sendWard = async(req, res) => {
     let sql = `SELECT a.pointSeq,b.cardName,b.createUserno,a.pointNum FROM reward_point.point as a 
       left join reward_point.card as b on a.cardSeq=b.cardSeq  
       where pointCode = ? and status = ?  and b.createUserno =  ?`;
-    values = [req.params.pointCode, 'u', req.session.userId];
+    values = [req.params.pointCode, 'r', req.session.userId];
     let check = await query (sql, values);
     if (check.length == 1){
 
