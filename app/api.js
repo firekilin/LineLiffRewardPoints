@@ -165,12 +165,35 @@ router.post ('/wantWard', async(req, res) => {
         let json = {
           img: qrCode,
           url: url,
-          pointNum: req.body.pointNum,
           cardName: req.body.cardName
         };
     
         res.send (utils.response (json));
       });
+    } else {
+      res.send (utils.response ('無法兌換，請確認點數充足 或 是否有進行中點數', '0004'));
+
+    }
+   
+  }
+});
+
+//送禮 掃描操作
+router.get ('/snedWard/:pointCode', async(req, res) => {
+
+  let json = await points.sendWard (req, res);
+  if (json != null){
+    res.send (utils.response (json ));
+  } else {
+    res.send (utils.response ('無權限兌換', '0004'));
+  }});
+
+//
+router.post ('/delShare', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    let check = await points.delShare (req, res);
+    if (check){
+      res.send (utils.response ('完成'));
     } else {
       res.send (utils.response ('無法兌換，請確認點數充足 或 是否有轉送中點數', '0004'));
 
@@ -179,15 +202,7 @@ router.post ('/wantWard', async(req, res) => {
   }
 });
 
-//收點 掃描操作 轉收
-router.get ('/snedWard/:pointCode', async(req, res) => {
 
-  let json = await points.sendWard (req, res);
-  if (json != null){
-    res.send (utils.response (json ));
-  } else {
-    res.send (utils.response ('無效兌換', '0004'));
-  }});
 
 
 module.exports = router ;

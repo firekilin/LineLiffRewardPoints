@@ -116,3 +116,141 @@ class modal{
 }
 let alertModal = new modal ();
 $ ('body').append (alertModal.getModal ());
+
+//送點數訊息
+let sharePoint = (point) => {
+  if (liff.isApiAvailable ('shareTargetPicker')) {
+    liff.shareTargetPicker ([{
+      'type': 'flex',
+      'altText': '冰塊 集點站 傳送點數',
+      'contents':
+
+      {
+        'type': 'bubble',
+        'body': {
+          'type': 'box',
+          'layout': 'vertical',
+          'contents': [
+            {
+              'type': 'text',
+              'text': '冰塊 集點站',
+              'weight': 'bold',
+              'size': 'xxl',
+              'margin': 'md',
+              'align': 'center'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'text',
+              'text': point.cardName,
+              'align': 'center',
+              'margin': 'md',
+              'size': 'xl'
+            },
+            {
+              'type': 'text',
+              'text': point.pointNum + ' 點',
+              'align': 'center',
+              'size': 'xl',
+              'margin': 'md',
+              'color': '#FF0000'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'box',
+              'layout': 'horizontal',
+              'margin': 'md',
+              'contents': [
+                { 'type': 'button',
+                  'action': {
+                    'type': 'uri',
+                    'label': '領取',
+                    'uri': point.url
+                  } }
+              ],
+              'borderColor': '#0080FF',
+              'borderWidth': '1px',
+              'cornerRadius': '50px'
+            }
+          ]
+        },
+        'styles': { 'footer': { 'separator': true } }
+      }
+          
+    }]);
+  } else {
+    alertModal.setBodyText ('未允許此程式使用分享功能');
+    alertModal.show ();
+  }
+};
+
+//換獎訊息
+let wantWard = (point) => {
+  if (liff.isApiAvailable ('shareTargetPicker')) {
+    liff.shareTargetPicker ([{
+      'type': 'flex',
+      'altText': '冰塊 集點站 兌換獎品',
+      'contents':
+
+      {
+        'type': 'bubble',
+        'body': {
+          'type': 'box',
+          'layout': 'vertical',
+          'contents': [
+            {
+              'type': 'text',
+              'text': '冰塊 集點站',
+              'weight': 'bold',
+              'size': 'xxl',
+              'margin': 'md',
+              'align': 'center'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'text',
+              'text': point.cardName,
+              'align': 'center',
+              'margin': 'md',
+              'size': 'xl'
+            },
+            {
+              'type': 'text',
+              'text': '交出禮物來~',
+              'align': 'center',
+              'size': 'xl',
+              'margin': 'md',
+              'color': '#FF0000'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'box',
+              'layout': 'horizontal',
+              'margin': 'md',
+              'contents': [
+                { 'type': 'button',
+                  'action': {
+                    'type': 'uri',
+                    'label': '送你啦',
+                    'uri': point.url
+                  } }
+              ],
+              'borderColor': '#0080FF',
+              'borderWidth': '1px',
+              'cornerRadius': '50px'
+            }
+          ]
+        },
+        'styles': { 'footer': { 'separator': true } }
+      }
+          
+    }]);
+  } else {
+    alertModal.setBodyText ('未允許此程式使用分享功能');
+    alertModal.show ();
+  }
+};

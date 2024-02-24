@@ -91,8 +91,41 @@ let showcard = (id, pointNum) => {
               }
               table.append (tbody);
               alertModal.getBody ().append (`目前點數:${pointNum}  接收: ${point.get}   轉收: ${point.getShare}   待轉收: ${point.waitShare}   已轉送: ${point.sendShare}   已兌換: ${point.ward}`);
-
               alertModal.getBody ().append (table);
+
+              let delShare = $ ('<button type="button" class="btn btn-danger">刪除進行中</button>');
+              delShare.on ('click', () => {
+                $.ajax (
+                  {
+                    url: '/api/delShare',
+                    method: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=utf-8',
+                    data: JSON.stringify ({ cardSeq: id }),
+                    success: async(json) => {
+                      if (json.code == '0000'){
+                        alertModal.getBody ().empty ();
+                        alertModal.getBody ().append ('完成');
+                        alertModal.getFooter ().empty ();
+                        alertModal.getFooter ().append (alertModal.getCloseBtn ());
+                        alertModal.show ();
+             
+                      } else {
+                        alertModal.setBodyText (json.data);
+                        alertModal.getFooter ().empty ();
+                        alertModal.getFooter ().append (alertModal.getCloseBtn ());
+                        alertModal.show ();
+
+                      }
+                    }, error: (error) => {
+                    } 
+                  });
+              });
+
+
+              alertModal.getFooter ().empty ();
+              alertModal.getFooter ().append (delShare);
+              alertModal.getFooter ().append (alertModal.getCloseBtn ());
 
             }, error: (error) => {
             } 
@@ -113,16 +146,15 @@ let indexReady = () => {
       contentType: 'application/json;charset=utf-8',
       success: (json) => {
         for (let i = 0;i < json.data.length;i ++){
-          let card = $ ('<div class="card mb-3 mb-sm-0">');
+          let card = $ ('<div class="card mb-3 mb-sm-1">');
           let cardHeader = $ ('<div class="card-header">').text (json.data[i].cardName);
           let cardBody = $ ('<div class="card-body row">');
           cardBody.append ($ ('<div class="col-sm-4">').text ('目前點數：' + json.data[i].pointNum + '/' + json.data[i].cardNum));
           cardBody.append ($ ('<div class="col-sm-4">').text ('截止日：' + (json.data[i].cardExp == null ? '' : (new Date (json.data[i].cardExp)).toLocaleDateString ())));
-          cardBody.append ($ ('<a  class="col-sm-6 btn btn-secondary mb-3 mb-sm-0">').text ('查看').on ('click', () => {
+          cardBody.append ($ ('<a  class="col-sm-6 btn btn-secondary mb-3 mb-sm-1">').text ('查看').on ('click', () => {
             showcard (json.data[i].cardSeq, json.data[i].pointNum);
-
           }));
-          let setpoint = $ ('<div class="col-sm-6 row mb-3 mb-sm-0">');
+          let setpoint = $ ('<div class="col-sm-6 row mb-3 mb-sm-1">');
           if (json.data[i].cardGift == 'e'){
             //設定發送數值
             let pointNum = $ ('<div class="col-sm-4">');
@@ -181,6 +213,44 @@ let indexReady = () => {
             //加入發送點數功能
             cardBody.append (setpoint);
           }
+          if (json.data[i].pointNum >= json.data[i].cardNum){
+            cardBody.append ($ ('<a  class="col-sm-6 btn btn-success mb-3 mb-sm-1">').text ('兌換').on ('click', () => {
+              $.ajax (
+                {
+                  url: '/api/wantWard',
+                  method: 'POST',
+                  dataType: 'json',
+                  contentType: 'application/json;charset=utf-8',          
+                  data: JSON.stringify ({ cardSeq: json.data[i].cardSeq,
+                    cardName: json.data[i].cardName }),
+                  success: async (json) => {
+                    if (json.code == '0000'){
+                      let img = await base64ToImage (json.data.img);
+                      alertModal.getBody ().empty ();
+                      alertModal.getBody ().append (img);
+                      alertModal.getFooter ().empty ();
+                      alertModal.getFooter ().append (alertModal.getCloseBtn ());
+           
+                      //分享
+                      let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
+                      share.on ('click', () => {
+                        wantWard (json.data);
+                      });
+                      alertModal.getFooter ().append (share);
+                      alertModal.show ();
+           
+                    } else {
+                      alertModal.setBodyText (json.data);
+                      alertModal.show ();
+
+                    }
+                  }, error: (error) => {
+                    console.log (error);
+
+                  } 
+                });
+            }));
+          }
           card.append (cardHeader);
           card.append (cardBody);
           $ ('#cardList').append (card);  
@@ -192,4 +262,3 @@ let indexReady = () => {
     });
   
 };
-indexReady ();
