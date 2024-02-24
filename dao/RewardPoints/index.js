@@ -222,7 +222,7 @@ exports.pointList = async(req, res) => {
                     FROM 
                         reward_point.point 
                     WHERE 
-                        createUserno = ? AND status = 'm' 
+                        createUserno = ? AND status in ('m','u') 
                     GROUP BY 
                         cardSeq
                     ) AS m ON a.cardSeq = m.cardSeq
@@ -263,7 +263,7 @@ exports.sharePoint = async(req, res) => {
                     FROM 
                         reward_point.point 
                     WHERE 
-                        createUserno = ? AND status in ('m','g','u') 
+                        createUserno = ? AND status in ('m','g','u','r') 
                     GROUP BY 
                         cardSeq
                     ) AS m ON a.cardSeq = m.cardSeq

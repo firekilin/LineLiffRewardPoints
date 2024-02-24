@@ -90,7 +90,8 @@ let showcard = (id, pointNum) => {
                 `));
               }
               table.append (tbody);
-              alertModal.getBody ().append (`目前點數:${pointNum}  接收: ${point.get}   轉收: ${point.getShare}   待轉收: ${point.waitShare}   已轉送: ${point.sendShare}   已兌換: ${point.ward}`);
+              let nowPoint = point.get + point.getShare - point.sendShare - point.ward;
+              alertModal.getBody ().append (`目前點數:${nowPoint}  接收: ${point.get}   轉收: ${point.getShare}   待轉收: ${point.waitShare}   已轉送: ${point.sendShare}   已兌換: ${point.ward}`);
               alertModal.getBody ().append (table);
 
               let delShare = $ ('<button type="button" class="btn btn-danger">刪除進行中</button>');
