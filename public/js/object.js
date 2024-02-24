@@ -219,7 +219,7 @@ let wantWard = (point) => {
             },
             {
               'type': 'text',
-              'text': '交出禮物來~',
+              'text': '我要兌換!!',
               'align': 'center',
               'size': 'xl',
               'margin': 'md',
@@ -235,7 +235,7 @@ let wantWard = (point) => {
                 { 'type': 'button',
                   'action': {
                     'type': 'uri',
-                    'label': '送你啦',
+                    'label': '兌換',
                     'uri': point.url
                   } }
               ],
