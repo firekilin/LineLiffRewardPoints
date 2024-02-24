@@ -179,7 +179,7 @@ router.post ('/wantWard', async(req, res) => {
 });
 
 //送禮 掃描操作
-router.get ('/snedWard/:pointCode', async(req, res) => {
+router.get ('/sendWard/:pointCode', async(req, res) => {
 
   let json = await points.sendWard (req, res);
   if (json != null){
