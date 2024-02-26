@@ -92,69 +92,101 @@ let indexReady = () => {
         'type': 'flex',
         'altText': '冰塊 集點站 兌換獎品',
         'contents':
-        { 'type': 'bubble',
+        {
+          'type': 'bubble',
+          'hero': {
+            'type': 'image',
+            'url': 'https://points.oou.tw/public/img/poohGiveMe.png',
+            'size': 'full',
+            'aspectRatio': '2:1',
+            'aspectMode': 'fit',
+            'animated': true,
+            'action': { 'type': 'uri',
+              'uri': 'https://liff.line.me/1656461762-Gq9B5Oz9' }
+          },
           'body': {
             'type': 'box',
             'layout': 'vertical',
             'contents': [
               {
-                'type': 'image',
-                'url': 'https://apng.onevcat.com/assets/elephant.png',
-                'size': 'full',
-                'aspectMode': 'cover',
-                'aspectRatio': '1:1',
-                'gravity': 'center'
+                'type': 'text',
+                'text': '冰塊 集點站',
+                'weight': 'bold',
+                'size': 'xl'
               },
               {
                 'type': 'box',
                 'layout': 'vertical',
-                'contents': [],
-                'position': 'absolute',
-                'background': {
-                  'type': 'linearGradient',
-                  'angle': '0deg',
-                  'endColor': '#00000000',
-                  'startColor': '#00000099'
-                },
-                'width': '100%',
-                'height': '40%',
-                'offsetBottom': '0px',
-                'offsetStart': '0px',
-                'offsetEnd': '0px'
-              },
-              {
-                'type': 'box',
-                'layout': 'horizontal',
+                'margin': 'lg',
+                'spacing': 'sm',
                 'contents': [
                   {
                     'type': 'box',
-                    'layout': 'vertical',
+                    'layout': 'baseline',
+                    'spacing': 'sm',
                     'contents': [
                       {
-                        'type': 'box',
-                        'layout': 'horizontal',
-                        'contents': [
-                          {
-                            'type': 'text',
-                            'text': 'APNG Demo',
-                            'size': 'xl',
-                            'color': '#ffffff'
-                          }
-                        ]
+                        'type': 'text',
+                        'text': '用途',
+                        'color': '#aaaaaa',
+                        'size': 'sm',
+                        'flex': 1
+                      },
+                      {
+                        'type': 'text',
+                        'wrap': true,
+                        'color': '#666666',
+                        'size': 'sm',
+                        'flex': 5,
+                        'text': '自製自己與朋友間專屬集點卡'
                       }
-                    ],
-                    'spacing': 'xs'
+                    ]
+                  },
+                  {
+                    'type': 'box',
+                    'layout': 'baseline',
+                    'spacing': 'sm',
+                    'contents': [
+                      {
+                        'type': 'text',
+                        'text': '介紹',
+                        'color': '#aaaaaa',
+                        'size': 'sm',
+                        'flex': 1
+                      },
+                      {
+                        'type': 'text',
+                        'text': '冰塊製作 \n ',
+                        'wrap': true,
+                        'color': '#666666',
+                        'size': 'sm',
+                        'flex': 5
+                      }
+                    ]
                   }
-                ],
-                'position': 'absolute',
-                'offsetBottom': '0px',
-                'offsetStart': '0px',
-                'offsetEnd': '0px',
-                'paddingAll': '20px'
+                ]
+              }
+            ]
+          },
+          'footer': {
+            'type': 'box',
+            'layout': 'vertical',
+            'spacing': 'sm',
+            'contents': [
+              {
+                'type': 'button',
+                'style': 'primary',
+                'height': 'sm',
+                'action': {
+                  'type': 'uri',
+                  'label': '前往',
+                  'uri': 'https://liff.line.me/1656461762-Gq9B5Oz9'
+                }
               }
             ],
-            'paddingAll': '0px'
-          } }
+            'flex': 0
+          }
+        }
             
       }]);
     }
