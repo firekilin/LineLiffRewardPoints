@@ -22,6 +22,13 @@ router.get ('/dev', async(req, res) => {
   res.send (utils.response (config.get ('dev')));
 });
 
+//dev account
+router.get ('/dev2', async(req, res) => {
+  req.session.userId = config.get ('dev2').userId;
+  req.session.displayName = config.get ('dev2').displayName;
+  res.send (utils.response (config.get ('dev2')));
+});
+
 //初次登入驗證保存
 router.post ('/login', async(req, res) => {
   try {
@@ -87,5 +94,15 @@ router.get ('/sendWard/:getWard', async(req, res) => {
   res.render ('sendWard', { getWard: getWard });
 
 });
+
+
+
+//加入人員 掃描操作
+router.get ('/addGroup/:getPoint', async(req, res) => {
+  const getPoint = req.params.getPoint;
+  res.render ('addGroup', { getPoint: getPoint });
+
+});
+
 
 module.exports = router;

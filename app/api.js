@@ -39,6 +39,47 @@ router.get ('/manageCardList', async(req, res) => {
   }
 });
 
+//取得發點數人員清單
+router.post ('/groupList', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    res.send (utils.response ( await points.groupList (req, res)));
+  }
+});
+
+
+//新增發點數人員QRCode
+router.post ('/addGroup', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    req.body.pointCode = utils.getRandomCode ();
+    let check = await points.addGroup (req, res);
+    if (check){
+      let url = 'https://liff.line.me/' + config.get ('line.liffId') + '/addGroup/' + req.body.pointCode;
+      qrcode.toDataURL (url, (err, qrCode) => {
+        let json = {
+          img: qrCode,
+          url: url,
+          cardName: req.body.cardName
+        };
+    
+        res.send (utils.response (json));
+      });
+    } else {
+      res.send (utils.response ('無權限', '0004'));
+
+    }
+   
+  }
+});
+
+//人員加入
+router.get ('/joinGroup/:pointCode', async(req, res) => {
+  let json = await points.joinGroup (req, res);
+  if (json != null){
+    res.send (utils.response (json ));
+  } else {
+    res.send (utils.response ('連結失效，無法加入', '0004'));
+  }});
+
 //取得卡片詳細
 router.post ('/showCard', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
@@ -189,14 +230,14 @@ router.get ('/sendWard/:pointCode', async(req, res) => {
     res.send (utils.response ('無權限兌換', '0004'));
   }});
 
-//
+//移除進行中
 router.post ('/delShare', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     let check = await points.delShare (req, res);
     if (check){
       res.send (utils.response ('完成'));
     } else {
-      res.send (utils.response ('無法兌換，請確認點數充足 或 是否有轉送中點數', '0004'));
+      res.send (utils.response ('移除失敗', '0004'));
 
     }
    

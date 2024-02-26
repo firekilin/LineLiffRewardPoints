@@ -431,6 +431,9 @@ const GIF = function () {
 */
 let base64ToGif = async (base64) => {
   return new Promise ((resolve, reject) => {
+    if (base64 == null || base64 == ''){
+      resolve (null);
+    }
     const blob = base64ToBlob (base64.substring (base64.indexOf (',') + 1), 'image');
     const blobUrl = URL.createObjectURL (blob);
     let myGif = new GIF ();

@@ -4,7 +4,11 @@
 exports.response = ( data, code) => {
   if (code == null){
     code = '0000';
+    if (data == null){
+      data = [];
+    }
   }
+  
   let res = { data: data,
     code: code };
   return JSON.stringify (res);
@@ -35,7 +39,7 @@ exports.bufferToBase64 = (buffer) => {
   if (buffer == null || buffer == ''){
     return null;
   }
-  let base64 = buffer.toString('base64');
+  let base64 = buffer.toString ('base64');
   return base64;
 };
 

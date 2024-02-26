@@ -417,38 +417,46 @@ $ (() => {
   bgImage.src = 'public/img/bg.png';
 
   $ ('#send').on ('click', async () => {
-    let saveData = myeditcanvas.getCanvasp ();
-    saveData.cardName = $ ('#cardName').val ();
-    if ($ ('#cardExp').val () != ''){
-      saveData.cardExp = $ ('#cardExp').val () + ' 23:59:59';
-    }
-    saveData.cardGift = $ ('#cardGift').prop ('checked') ? 'e' : 'd';
-    let pointImgs = [];
-    for (let i = 0;i < $ ('input[name=pointfile]').length;i ++ ){
-      pointImgs.push (await fileToBase64 ($ ('input[name=pointfile]')[i].files[0]));
-    }
-    if ($ ('#pointOver')[0].files[0] != null){
-      saveData.pointOver = await fileToBase64 ($ ('#pointOver')[0].files[0]);
-    }
-    saveData.pointImgs = pointImgs;
-    $.ajax (
-      {
-        url: '/api/createCard',
-        method: 'POST',
-        dataType: 'json',
-        contentType: 'application/json;charset=utf-8',          
-        data: JSON.stringify (saveData),
-        success: (json) => {
-          if (json.code == '0000'){
-            window.location = '/';
-          } else {
-            alertModal.setBodyText (json.data);
-            alertModal.show ();
-          }
-        }, error: (error) => {
-          console.log (error);
-
-        } 
-      });
+    let check = new checkRequire ();
+    check.checkItem ($ ('#bgupload'), '尚未選擇背景');
+    check.checkItem ($ ('#pointupload'), '尚未選擇貼紙');
+    check.checkItem ($ ('#cardName'), '尚未設定名稱');
+    check.checkAlert (async () => {
+      let saveData = myeditcanvas.getCanvasp ();
+      saveData.cardName = $ ('#cardName').val ();
+      if ($ ('#cardExp').val () != ''){
+        saveData.cardExp = $ ('#cardExp').val () + ' 23:59:59';
+      }
+      saveData.cardGift = $ ('#cardGift').prop ('checked') ? 'e' : 'd';
+      let pointImgs = [];
+      for (let i = 0;i < $ ('input[name=pointfile]').length;i ++ ){
+        pointImgs.push (await fileToBase64 ($ ('input[name=pointfile]')[i].files[0]));
+      }
+      if ($ ('#pointOver')[0].files[0] != null){
+        saveData.pointOver = await fileToBase64 ($ ('#pointOver')[0].files[0]);
+      }
+      saveData.pointImgs = pointImgs;
+      $.ajax (
+        {
+          url: '/api/createCard',
+          method: 'POST',
+          dataType: 'json',
+          contentType: 'application/json;charset=utf-8',          
+          data: JSON.stringify (saveData),
+          success: (json) => {
+            if (json.code == '0000'){
+              window.location = '/';
+            } else {
+              alertModal.setBodyText (json.data);
+              alertModal.show ();
+            }
+          }, error: (error) => {
+            console.log (error);
+  
+          } 
+        });
+    });
   });
+
+  
 });

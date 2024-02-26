@@ -13,7 +13,6 @@ let blobtobase64 = (blob) => {
   });
 };
 
-
 /*
   *
   * 轉blob
@@ -44,7 +43,6 @@ let base64ToImage = (base64) => {
 
   });
 };
-
 
 /*
   * bloburl轉base64
@@ -77,6 +75,9 @@ let imgToBase64 = (img) => {
 /** file to base64 */
 let fileToBase64 = (file) => {
   return new Promise ((resolve, reject) => {
+    if (file == null){
+      resolve (null);
+    }
     const reader = new FileReader ();
   
     reader.onload = function(event) {
@@ -88,3 +89,5 @@ let fileToBase64 = (file) => {
   });
   
 };
+
+

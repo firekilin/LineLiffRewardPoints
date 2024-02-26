@@ -38,7 +38,6 @@ class Loading{
 
   }
 }
-
 //設定loading
 let loading = new Loading ('/public/img/loading.gif');
 $ (document).ajaxStart (function(){
@@ -47,7 +46,6 @@ $ (document).ajaxStart (function(){
 $ (document).ajaxComplete (function(){
   loading.hide ();
 });
-
 
 loading.show ();
 
@@ -116,6 +114,48 @@ class modal{
 }
 let alertModal = new modal ();
 $ ('body').append (alertModal.getModal ());
+
+
+class checkRequire{
+  constructor(){
+    this.checkMsg = [];
+  }
+  /** 
+   * @item obj <input>
+   * @String msg 未輸入之錯誤訊息
+   */
+  checkItem(obj, msg){
+    if ($ (obj).val ().length === 0 ){
+      this.checkMsg.push (msg);
+    }
+  }
+  /**
+   * 驗證並彈出視窗
+   * @function 成功後執行
+   */
+  checkAlert(fn){
+    if (this.check ()){
+      fn ();
+    } else {
+      alertModal.setHeaderText ('錯誤');
+      alertModal.getBody ().empty ();
+      for (let i = 0;i < this.checkMsg.length;i ++){
+        alertModal.getBody ().append ($ ('<p>').text (this.checkMsg[i]));
+      }
+      alertModal.show ();
+    }
+  };
+  /**
+   * 純驗證
+   *  */  
+  check(){
+    if (this.checkMsg.length > 0){
+      return false;
+    } else {
+      return true;
+    }
+  };
+}
 
 //送點數訊息
 let sharePoint = (point) => {
@@ -254,3 +294,114 @@ let wantWard = (point) => {
     alertModal.show ();
   }
 };
+
+//分享此app
+let shareLiff = () => {
+  if (liff.isInClient ()) {
+ 
+    liff.shareTargetPicker ([{
+      'type': 'flex',
+      'altText': '冰塊 集點站 兌換獎品',
+      'contents':
+        {
+          'type': 'bubble',
+          'hero': {
+            'type': 'image',
+            'url': 'https://points.oou.tw/public/img/poohGiveMe.gif',
+            'size': 'full',
+            'aspectRatio': '2:1',
+            'aspectMode': 'fit',
+            'animated': true,
+            'action': { 'type': 'uri',
+              'uri': 'https://liff.line.me/1656461762-Gq9B5Oz9' }
+          },
+          'body': {
+            'type': 'box',
+            'layout': 'vertical',
+            'contents': [
+              {
+                'type': 'text',
+                'text': '冰塊 集點站',
+                'weight': 'bold',
+                'size': 'xl'
+              },
+              {
+                'type': 'box',
+                'layout': 'vertical',
+                'margin': 'lg',
+                'spacing': 'sm',
+                'contents': [
+                  {
+                    'type': 'box',
+                    'layout': 'baseline',
+                    'spacing': 'sm',
+                    'contents': [
+                      {
+                        'type': 'text',
+                        'text': '用途',
+                        'color': '#aaaaaa',
+                        'size': 'sm',
+                        'flex': 1
+                      },
+                      {
+                        'type': 'text',
+                        'wrap': true,
+                        'color': '#666666',
+                        'size': 'sm',
+                        'flex': 5,
+                        'text': '自製自己與朋友間專屬集點卡'
+                      }
+                    ]
+                  },
+                  {
+                    'type': 'box',
+                    'layout': 'baseline',
+                    'spacing': 'sm',
+                    'contents': [
+                      {
+                        'type': 'text',
+                        'text': '介紹',
+                        'color': '#aaaaaa',
+                        'size': 'sm',
+                        'flex': 1
+                      },
+                      {
+                        'type': 'text',
+                        'text': '冰塊製作 \n ',
+                        'wrap': true,
+                        'color': '#666666',
+                        'size': 'sm',
+                        'flex': 5
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          'footer': {
+            'type': 'box',
+            'layout': 'vertical',
+            'spacing': 'sm',
+            'contents': [
+              {
+                'type': 'button',
+                'style': 'primary',
+                'height': 'sm',
+                'action': {
+                  'type': 'uri',
+                  'label': '前往',
+                  'uri': 'https://liff.line.me/1656461762-Gq9B5Oz9'
+                }
+              }
+            ],
+            'flex': 0
+          }
+        }
+            
+    }]);
+  }
+};
+
+  
+ 

@@ -204,12 +204,7 @@ let showDoWard = (data) => {
         }
 
         let getWardImage = await base64ToGif (json.data.getWardImage);
-        testgif = getWardImage;
-        let frameIndex = 0;
-        let frameCount = testgif.frameCount; 
-        let times = 0;
-        // 開始
-        var animation = setInterval (() => {
+        if (getWardImage == null){
           ctx.clearRect (0, 0, canvas.width, canvas.height);
           ctx.drawImage (bgImage, 0, 0, canvas.width, canvas.height); 
           let position = JSON.parse (json.data.cardPosition);
@@ -217,22 +212,37 @@ let showDoWard = (data) => {
             let pos = position[j];
             ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
           }
-          ctx.drawImage (getWardImage.frames[frameIndex].image, 0, 0, canvas.width, canvas.height);
-          if (times < 2){
-            if (frameIndex < (frameCount - 1)) {
-              frameIndex ++;
-            } else {
-              times ++;
-              if (times != 2){
-                frameIndex = 0;
-              }
+        } else {
+          let frameIndex = 0;
+          let frameCount = testgif.frameCount; 
+          let times = 0;
+          // 開始
+          var animation = setInterval (() => {
+            ctx.clearRect (0, 0, canvas.width, canvas.height);
+            ctx.drawImage (bgImage, 0, 0, canvas.width, canvas.height); 
+            let position = JSON.parse (json.data.cardPosition);
+            for (let j = 0;j < json.data.cardNum;j ++){
+              let pos = position[j];
+              ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
             }
-          } else {
-            frameIndex = (frameCount - 1);
-            clearInterval (animation);
-          }
-        
-        }, 100);
+            ctx.drawImage (getWardImage.frames[frameIndex].image, 0, 0, canvas.width, canvas.height);
+            if (times < 2){
+              if (frameIndex < (frameCount - 1)) {
+                frameIndex ++;
+              } else {
+                times ++;
+                if (times != 2){
+                  frameIndex = 0;
+                }
+              }
+            } else {
+              frameIndex = (frameCount - 1);
+              clearInterval (animation);
+            }
+          
+          }, 100);
+        }
+      
       }, error: (error) => {
       } 
     });
