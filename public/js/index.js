@@ -85,20 +85,116 @@ let indexReady = () => {
     });
       
   // sendMessages call  傳訊息
-  let sendMessage = (gettext) => {
+  let shareLiff = () => {
     if (liff.isInClient ()) {
  
-      liff.sendMessages ([{ 'type': 'text',
-        'text': gettext }]).then (function() {
-        liff.closeWindow ();
-      }).catch (function(error) {
-        window.alert ('Error sending message: ' + error);
-      });
+      liff.shareTargetPicker ([{
+        'type': 'flex',
+        'altText': '冰塊 集點站 兌換獎品',
+        'contents':
+        {
+          'type': 'bubble',
+          'hero': {
+            'type': 'image',
+            'url': 'https://points.oou.tw/public/img/poohGiveMe.gif',
+            'size': 'full',
+            'aspectRatio': '2:1',
+            'aspectMode': 'fit',
+            'action': { 'type': 'uri',
+              'uri': 'http://linecorp.com/' }
+          },
+          'body': {
+            'type': 'box',
+            'layout': 'vertical',
+            'contents': [
+              {
+                'type': 'text',
+                'text': '冰塊 集點站',
+                'weight': 'bold',
+                'size': 'xl'
+              },
+              {
+                'type': 'box',
+                'layout': 'vertical',
+                'margin': 'lg',
+                'spacing': 'sm',
+                'contents': [
+                  {
+                    'type': 'box',
+                    'layout': 'baseline',
+                    'spacing': 'sm',
+                    'contents': [
+                      {
+                        'type': 'text',
+                        'text': '用途',
+                        'color': '#aaaaaa',
+                        'size': 'sm',
+                        'flex': 1
+                      },
+                      {
+                        'type': 'text',
+                        'wrap': true,
+                        'color': '#666666',
+                        'size': 'sm',
+                        'flex': 5,
+                        'text': '自製自己與朋友間專屬集點卡'
+                      }
+                    ]
+                  },
+                  {
+                    'type': 'box',
+                    'layout': 'baseline',
+                    'spacing': 'sm',
+                    'contents': [
+                      {
+                        'type': 'text',
+                        'text': '介紹',
+                        'color': '#aaaaaa',
+                        'size': 'sm',
+                        'flex': 1
+                      },
+                      {
+                        'type': 'text',
+                        'text': '冰塊製作 \n ',
+                        'wrap': true,
+                        'color': '#666666',
+                        'size': 'sm',
+                        'flex': 5
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          'footer': {
+            'type': 'box',
+            'layout': 'vertical',
+            'spacing': 'sm',
+            'contents': [
+              {
+                'type': 'button',
+                'style': 'primary',
+                'height': 'sm',
+                'action': {
+                  'type': 'uri',
+                  'label': '前往',
+                  'uri': 'https://linecorp.com'
+                }
+              }
+            ],
+            'flex': 0
+          }
+        }
+            
+      }]);
     }
   };
+
+  
  
   $ ('#share').on ('click', () => {
-    sendMessage ('test');
+    shareLiff ();
   });
 };
 
