@@ -96,7 +96,7 @@ let indexReady = () => {
           'type': 'bubble',
           'hero': {
             'type': 'image',
-            'url': 'https://points.oou.tw/public/img/poohGiveMe.gif',
+            'url': 'https://points.oou.tw/public/img/poohGiveMe.png',
             'size': 'full',
             'aspectRatio': '2:1',
             'aspectMode': 'fit',
