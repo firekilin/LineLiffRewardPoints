@@ -49,6 +49,7 @@ router.post ('/showCard', async(req, res) => {
       pointImgsTemp.push (utils.bufferToBase64 (json.pointImage[i]));
     }
     json.pointImage = pointImgsTemp;
+    json.getWardImage = utils.bufferToBase64 (json.getWardImage);
 
 
     if (json != null){

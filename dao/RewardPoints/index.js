@@ -139,9 +139,15 @@ exports.manageCard = async(req, res) => {
       }
       json.pointImage = pointImage;
     }
+    sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
+    values = [req.body.cardSeq, '3'];
+    check = await query (sql, values);
+    if (check){
+      json.getWardImage = check[0].filedata;
+    }
     sql = `SELECT  pointNum,createdate,status  
-      FROM reward_point.point where cardSeq = ? and (createUserno = ? or pointUserno= 'u') `;
-    values = [req.body.cardSeq, req.session.userId];
+      FROM reward_point.point where cardSeq = ? and (createUserno = ? or pointUserno= ?) `;
+    values = [req.body.cardSeq, req.session.userId, req.session.userId];
     check = await query (sql, values);
     if (check){
       json.sendPoint = check;

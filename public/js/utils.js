@@ -29,7 +29,7 @@ let base64ToBlob = (base64, type) => {
 };
 
 /** 
- * 
+ * base64 to Image()
  * 
 */
 let base64ToImage = (base64) => {
@@ -44,7 +44,6 @@ let base64ToImage = (base64) => {
 
   });
 };
-
 
 
 /*

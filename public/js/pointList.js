@@ -1,3 +1,4 @@
+let testgif;
 let showcard = (id, pointNum) => {
   $.ajax (
     {
@@ -137,6 +138,111 @@ let showcard = (id, pointNum) => {
     });
 };
 
+
+
+
+/** showDoWard */
+let showDoWard = (data) => {
+  $.ajax (
+    {
+      url: '/api/wantWard',
+      method: 'POST',
+      dataType: 'json',
+      contentType: 'application/json;charset=utf-8',          
+      data: JSON.stringify ({ cardSeq: data.cardSeq,
+        cardName: data.cardName }),
+      success: async (json) => {
+        if (json.code == '0000'){
+          let img = await base64ToImage (json.data.img);
+          alertModal.getBody ().empty ();
+          alertModal.getBody ().append (img);
+          alertModal.getFooter ().empty ();
+          alertModal.getFooter ().append (alertModal.getCloseBtn ());
+
+          //分享
+          let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
+          share.on ('click', () => {
+            wantWard (json.data);
+          });
+          alertModal.getFooter ().append (share);
+          alertModal.show ();
+
+        } else {
+          alertModal.setBodyText (json.data);
+          alertModal.show ();
+
+        }
+      }, error: (error) => {
+        console.log (error);
+
+      } 
+    });
+  $.ajax (
+    {
+      url: '/api/showCard',
+      method: 'POST',
+      dataType: 'json',
+      contentType: 'application/json;charset=utf-8',
+      data: JSON.stringify ({ cardSeq: data.cardSeq }),
+      success: async(json) => {
+
+     
+        let canvas = $ ('<canvas id="canvas" width="400" height="400"></canvas>')[0];
+        alertModal.getBody ().append (canvas);
+        let maxWidth = alertModal.getBody ().width ();
+        let ctx = canvas.getContext ('2d');
+        let bgImage = await base64ToImage (json.data.bgImage);
+        let scale = 1;
+        if (bgImage.width > maxWidth) {
+          scale = (maxWidth / bgImage.width);
+        }
+        canvas.width = (bgImage.width * scale);
+        canvas.height = (bgImage.height * scale);
+        let pointImage = [];
+        for (let j = 0;j < json.data.pointImage.length;j ++){
+          pointImage.push (await base64ToImage (json.data.pointImage[j]));
+        }
+
+        let getWardImage = await base64ToGif (json.data.getWardImage);
+        testgif = getWardImage;
+        let frameIndex = 0;
+        let frameCount = testgif.frameCount; 
+        let times = 0;
+        // 開始
+        var animation = setInterval (() => {
+          ctx.clearRect (0, 0, canvas.width, canvas.height);
+          ctx.drawImage (bgImage, 0, 0, canvas.width, canvas.height); 
+          let position = JSON.parse (json.data.cardPosition);
+          for (let j = 0;j < json.data.cardNum;j ++){
+            let pos = position[j];
+            ctx.drawImage (pointImage[parseInt (Math.random () * json.data.pointImage.length)], pos.p.x * scale, pos.p.y * scale, pos.p.size * scale, pos.p.size * scale);
+          }
+          ctx.drawImage (getWardImage.frames[frameIndex].image, 0, 0, canvas.width, canvas.height);
+          if (times < 2){
+            if (frameIndex < (frameCount - 1)) {
+              frameIndex ++;
+            } else {
+              times ++;
+              if (times != 2){
+                frameIndex = 0;
+              }
+            }
+          } else {
+            frameIndex = (frameCount - 1);
+            clearInterval (animation);
+          }
+        
+        }, 100);
+      }, error: (error) => {
+      } 
+    });
+};
+
+
+
+
+
+
 let indexReady = () => {
 
   $.ajax (
@@ -216,40 +322,7 @@ let indexReady = () => {
           }
           if (json.data[i].pointNum >= json.data[i].cardNum){
             cardBody.append ($ ('<a  class="col-sm-6 btn btn-success mb-3 mb-sm-1">').text ('兌換').on ('click', () => {
-              $.ajax (
-                {
-                  url: '/api/wantWard',
-                  method: 'POST',
-                  dataType: 'json',
-                  contentType: 'application/json;charset=utf-8',          
-                  data: JSON.stringify ({ cardSeq: json.data[i].cardSeq,
-                    cardName: json.data[i].cardName }),
-                  success: async (json) => {
-                    if (json.code == '0000'){
-                      let img = await base64ToImage (json.data.img);
-                      alertModal.getBody ().empty ();
-                      alertModal.getBody ().append (img);
-                      alertModal.getFooter ().empty ();
-                      alertModal.getFooter ().append (alertModal.getCloseBtn ());
-           
-                      //分享
-                      let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
-                      share.on ('click', () => {
-                        wantWard (json.data);
-                      });
-                      alertModal.getFooter ().append (share);
-                      alertModal.show ();
-           
-                    } else {
-                      alertModal.setBodyText (json.data);
-                      alertModal.show ();
-
-                    }
-                  }, error: (error) => {
-                    console.log (error);
-
-                  } 
-                });
+              showDoWard (json.data[i]);
             }));
           }
           card.append (cardHeader);

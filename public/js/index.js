@@ -83,7 +83,23 @@ let indexReady = () => {
       }, error: (error) => {
       } 
     });
-  
+      
+  // sendMessages call  傳訊息
+  let sendMessage = (gettext) => {
+    if (liff.isInClient ()) {
+ 
+      liff.sendMessages ([{ 'type': 'text',
+        'text': gettext }]).then (function() {
+        liff.closeWindow ();
+      }).catch (function(error) {
+        window.alert ('Error sending message: ' + error);
+      });
+    }
+  };
+ 
+  $ ('#share').on ('click', () => {
+    sendMessage ('test');
+  });
 };
 
 
