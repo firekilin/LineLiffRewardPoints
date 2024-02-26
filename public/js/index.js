@@ -101,7 +101,7 @@ let indexReady = () => {
             'aspectRatio': '2:1',
             'aspectMode': 'fit',
             'action': { 'type': 'uri',
-              'uri': 'http://linecorp.com/' }
+              'uri': 'https://liff.line.me/1656461762-Gq9B5Oz9' }
           },
           'body': {
             'type': 'box',
@@ -179,7 +179,7 @@ let indexReady = () => {
                 'action': {
                   'type': 'uri',
                   'label': '前往',
-                  'uri': 'https://linecorp.com'
+                  'uri': 'https://liff.line.me/1656461762-Gq9B5Oz9'
                 }
               }
             ],
