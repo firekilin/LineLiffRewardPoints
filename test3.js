@@ -1,8 +1,8 @@
 const crc = require ('crc'); // 引入crc库
 class cunk{
-  constructor(){
-    this.length;
-    this.type;
+  constructor(len, type, body){
+    this.length = len;
+    this.type = type;
     this.body;
     this.crc;
   }
@@ -35,8 +35,8 @@ const filterMethod = 0; // 滤波器方法，通常为 0（adaptive filtering）
 const interlaceMethod = 0; // 隔行扫描方法，通常为 0（不使用隔行扫描）
 
 
-const ihdrChunk = Buffer.alloc (13); // 建立 Buffer
-ihdrChunk.write ('IHDR', 4, 'ascii'); // 類型
+const ihdrChunk = Buffer.alloc (17); // 建立 Buffer
+ihdrChunk.write ('IHDR', 0, 'ascii'); // 類型
 ihdrChunk.writeUInt32BE (width, 8); // 寬度
 ihdrChunk.writeUInt32BE (height, 12); // 高度
 ihdrChunk.writeUInt8 (bitDepth, 16); // 顏色深度
