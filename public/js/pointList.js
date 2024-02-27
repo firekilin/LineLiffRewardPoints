@@ -262,85 +262,88 @@ let indexReady = () => {
       dataType: 'json',
       contentType: 'application/json;charset=utf-8',
       success: (json) => {
-        for (let i = 0;i < json.data.length;i ++){
-          let card = $ ('<div class="card mb-3 mb-sm-1">');
-          let cardHeader = $ ('<div class="card-header">').text (json.data[i].cardName);
-          let cardBody = $ ('<div class="card-body row">');
-          cardBody.append ($ ('<div class="col-sm-4">').text ('目前點數：' + json.data[i].pointNum + '/' + json.data[i].cardNum));
-          cardBody.append ($ ('<div class="col-sm-4">').text ('截止日：' + (json.data[i].cardExp == null ? '' : (new Date (json.data[i].cardExp)).toLocaleDateString ())));
-          cardBody.append ($ ('<a  class="col-sm-6 btn btn-secondary mb-3 mb-sm-1">').text ('查看').on ('click', () => {
-            showcard (json.data[i].cardSeq, json.data[i].pointNum);
-          }));
-          let setpoint = $ ('<div class="col-sm-6 row mb-3 mb-sm-1">');
-          if (json.data[i].cardGift == 'e'){
-            //設定發送數值
-            let pointNum = $ ('<div class="col-sm-4">');
-            let pointSelect = $ ('<select class="form-select">');
-            for (let j = 1;j <= json.data[i].pointNum;j ++){
-              pointSelect.append ($ (`<option value="${j}">${j}</option>`));
+        if (json.code == '0000'){
+          for (let i = 0;i < json.data.length;i ++){
+            let card = $ ('<div class="card mb-3 mb-sm-1">');
+            let cardHeader = $ ('<div class="card-header">').text (json.data[i].cardName);
+            let cardBody = $ ('<div class="card-body row">');
+            cardBody.append ($ ('<div class="col-sm-4">').text ('目前點數：' + json.data[i].pointNum + '/' + json.data[i].cardNum));
+            cardBody.append ($ ('<div class="col-sm-4">').text ('截止日：' + (json.data[i].cardExp == null ? '' : (new Date (json.data[i].cardExp)).toLocaleDateString ())));
+            cardBody.append ($ ('<a  class="col-sm-6 btn btn-secondary mb-3 mb-sm-1">').text ('查看').on ('click', () => {
+              showcard (json.data[i].cardSeq, json.data[i].pointNum);
+            }));
+            let setpoint = $ ('<div class="col-sm-6 row mb-3 mb-sm-1">');
+            if (json.data[i].cardGift == 'e'){
+              //設定發送數值
+              let pointNum = $ ('<div class="col-sm-4">');
+              let pointSelect = $ ('<select class="form-select">');
+              for (let j = 1;j <= json.data[i].pointNum;j ++){
+                pointSelect.append ($ (`<option value="${j}">${j}</option>`));
+              }
+              pointNum.append (pointSelect);
+              //設定發送按鈕
+              let pointSend = $ ('<div class="col-sm-8">');
+              pointSend.append ($ ('<a  class="form-control btn btn-info">').text ('轉送').on ('click', () => {
+                $.ajax (
+                  {
+                    url: '/api/sharePoint',
+                    method: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=utf-8',          
+                    data: JSON.stringify ({
+                      cardSeq: json.data[i].cardSeq,
+                      cardName: json.data[i].cardName,
+                      pointNum: pointSelect.val () 
+                    }),
+                    success: async (json) => {
+                      if (json.code == '0000'){
+                        let img = await base64ToImage (json.data.img);
+                        alertModal.getBody ().empty ();
+                        alertModal.getBody ().append (img);
+                        alertModal.getFooter ().empty ();
+                        alertModal.getFooter ().append (alertModal.getCloseBtn ());
+             
+                        //分享
+                        let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
+                        share.on ('click', () => {
+                          sharePoint (json.data);
+                        });
+                        alertModal.getFooter ().append (share);
+                        alertModal.show ();
+             
+                      } else {
+                        alertModal.setBodyText (json.data);
+                        alertModal.show ();
+  
+                      }
+                    }, error: (error) => {
+                      console.log (error);
+  
+                    } 
+                  });
+  
+  
+     
+              }));
+              //介面加入
+              setpoint.append (pointSend);
+              setpoint.append (pointNum);
+              //加入發送點數功能
+              cardBody.append (setpoint);
             }
-            pointNum.append (pointSelect);
-            //設定發送按鈕
-            let pointSend = $ ('<div class="col-sm-8">');
-            pointSend.append ($ ('<a  class="form-control btn btn-info">').text ('轉送').on ('click', () => {
-              $.ajax (
-                {
-                  url: '/api/sharePoint',
-                  method: 'POST',
-                  dataType: 'json',
-                  contentType: 'application/json;charset=utf-8',          
-                  data: JSON.stringify ({
-                    cardSeq: json.data[i].cardSeq,
-                    cardName: json.data[i].cardName,
-                    pointNum: pointSelect.val () 
-                  }),
-                  success: async (json) => {
-                    if (json.code == '0000'){
-                      let img = await base64ToImage (json.data.img);
-                      alertModal.getBody ().empty ();
-                      alertModal.getBody ().append (img);
-                      alertModal.getFooter ().empty ();
-                      alertModal.getFooter ().append (alertModal.getCloseBtn ());
-           
-                      //分享
-                      let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
-                      share.on ('click', () => {
-                        sharePoint (json.data);
-                      });
-                      alertModal.getFooter ().append (share);
-                      alertModal.show ();
-           
-                    } else {
-                      alertModal.setBodyText (json.data);
-                      alertModal.show ();
-
-                    }
-                  }, error: (error) => {
-                    console.log (error);
-
-                  } 
-                });
-
-
-   
-            }));
-            //介面加入
-            setpoint.append (pointSend);
-            setpoint.append (pointNum);
-            //加入發送點數功能
-            cardBody.append (setpoint);
+            if (json.data[i].pointNum >= json.data[i].cardNum){
+              cardBody.append ($ ('<a  class="col-sm-6 btn btn-success mb-3 mb-sm-1">').text ('兌換').on ('click', () => {
+                showDoWard (json.data[i]);
+              }));
+            }
+            card.append (cardHeader);
+            card.append (cardBody);
+            $ ('#cardList').append (card);  
           }
-          if (json.data[i].pointNum >= json.data[i].cardNum){
-            cardBody.append ($ ('<a  class="col-sm-6 btn btn-success mb-3 mb-sm-1">').text ('兌換').on ('click', () => {
-              showDoWard (json.data[i]);
-            }));
-          }
-          card.append (cardHeader);
-          card.append (cardBody);
-          $ ('#cardList').append (card);  
+      
+        } else {
+          $ ('#cardList').append ('無');  
         }
-    
-        
       }, error: (error) => {
       } 
     });
