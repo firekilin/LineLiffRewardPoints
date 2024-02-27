@@ -101,8 +101,8 @@ exports.manageCardList = async(req, res) => {
   try {
     let sql = `SELECT distinct  a.cardSeq,a.cardName,a.cardNum,a.cardExp,a.cardGift 
     FROM reward_point.card as a 
-    join reward_point.group as b on a.cardSeq=b.cardSeq  
-    where a.createUserno=? or b.groupUserno=?`;
+    left join reward_point.group as b on a.cardSeq=b.cardSeq    
+    WHERE a.createUserno=? or b.groupUserno=?`;
     let values = [req.session.userId, req.session.userId];
     let check = await query (sql, values);
     if (check.length > 0){
@@ -118,7 +118,7 @@ exports.manageCardList = async(req, res) => {
 exports.manageCard = async(req, res) => {
   let json = {};
   try {
-    let sql = 'SELECT cardPosition,cardNum FROM reward_point.card where ? ';
+    let sql = 'SELECT cardPosition,cardNum FROM reward_point.card WHERE ? ';
     let values = { cardSeq: req.body.cardSeq };
     let check = await query (sql, values);
     if (check.length > 0){
@@ -126,13 +126,13 @@ exports.manageCard = async(req, res) => {
       json.cardNum = check[0].cardNum;
 
     }
-    sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
+    sql = 'SELECT filedata FROM reward_point.file WHERE cardSeq = ? and fileType = ? ';
     values = [req.body.cardSeq, '1'];
     check = await query (sql, values);
     if (check.length > 0){
       json.bgImage = check[0].filedata;
     }
-    sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
+    sql = 'SELECT filedata FROM reward_point.file WHERE cardSeq = ? and fileType = ? ';
     values = [req.body.cardSeq, '2'];
     check = await query (sql, values);
     let pointImage = [];
@@ -142,32 +142,41 @@ exports.manageCard = async(req, res) => {
       }
       json.pointImage = pointImage;
     }
-    sql = 'SELECT filedata FROM reward_point.file where cardSeq = ? and fileType = ? ';
+    sql = 'SELECT filedata FROM reward_point.file WHERE cardSeq = ? and fileType = ? ';
     values = [req.body.cardSeq, '3'];
     check = await query (sql, values);
     if (check.length > 0){
       json.getWardImage = check[0].filedata;
     }
-    sql = `SELECT  pointNum,createdate,status  
-      FROM reward_point.point where cardSeq = ? and (createUserno = ? or pointUserno= ?) `;
-    values = [req.body.cardSeq, req.session.userId, req.session.userId];
-    check = await query (sql, values);
-
-    if (check.length > 0){
-      json.sendPoint = check;
-    }
-
     return json;
   } catch (e){
     return null;
   }
 };
 
+
+/** 確認為卡片建立者 */
+exports.isCardBuilder = async(req, res) => {
+  try {
+    let sql = `SELECT cardSeq 
+      FROM reward_point.card WHERE cardSeq = ? and createUserno = ?;`;
+    let values = [req.body.cardSeq, req.session.userId];
+    let check = await query (sql, values);
+    if (check.length > 0){
+      return true;
+    }
+    return false;
+
+  } catch (e){
+    return false;
+  }
+};
+
 /** 發點人員清單 */
 exports.groupList = async(req, res) => {
   try {
-    let sql = `SELECT groupseq,groupUser 
-      FROM reward_point.group where createUserno = ? ;`;
+    let sql = `SELECT b.cardName,a.cardSeq,a.groupSeq,a.groupUser,a.groupCode
+      FROM reward_point.group as a left join reward_point.card as b on a.cardSeq=b.cardSeq WHERE a.cardSeq =? ;`;
     let values = [req.body.cardSeq, req.session.userId];
     let check = await query (sql, values);
     if (check.length > 0){
@@ -180,10 +189,64 @@ exports.groupList = async(req, res) => {
   }
 };
 
+/** 刪除發點人員 */
+exports.deleteGroup = async(req, res) => {
+  try {
+    let sql = `DELETE FROM reward_point.group WHERE  (cardSeq=?  and createUserno=? ) and (groupSeq = ? )`;
+    values = [req.body.cardSeq, req.session.userId, req.body.groupSeq];
+    let check = await query (sql, values);
+    if (check){
+      return true;
+    } 
+    return false;
+
+  } catch (e){
+    return false;
+  }
+};
+
+/** 卡片管理員動作紀錄 */
+exports.managerHistroy = async(req, res) => {
+  try {
+    sql = `SELECT  pointNum,createdate,status,createUser
+FROM reward_point.point WHERE cardSeq = ? and (createUserno = ? or pointUserno= ?) `;
+    values = [req.body.cardSeq, req.session.userId, req.session.userId];
+    check = await query (sql, values);
+    if (check.length > 0){
+      return check;
+    } else {
+      return null;
+    }
+  } catch (e){
+    return null;
+  }
+};
+
+
+/** 卡片建立者查看所有人動作紀錄 */
+exports.builderHistroy = async(req, res) => {
+  try {
+    sql = `SELECT  pointNum,createdate,status,createUser
+      FROM reward_point.point WHERE cardSeq = ? `;
+    values = [req.body.cardSeq];
+    check = await query (sql, values);
+    if (check.length > 0){
+      return check;
+    } else {
+      return null;
+    }
+  } catch (e){
+    return null;
+  }
+};
+
+
+
+
 /** 新增發點人員 QRcode */
 exports.addGroup = async(req, res) => {
   try {
-    let sql = `SELECT cardName FROM reward_point.card  where cardSeq=? and createUserno = ? ;`;
+    let sql = `SELECT cardName FROM reward_point.card  WHERE cardSeq=? and createUserno = ? ;`;
     let values = [req.body.cardSeq, req.session.userId];
     let check = await query (sql, values);
     if (check.length > 0){
@@ -214,15 +277,20 @@ exports.joinGroup = async(req, res) => {
   try {
     let sql = `SELECT a.groupSeq,b.cardName,a.groupUser,a.groupCode FROM reward_point.group as a 
       left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where groupCode = ? and a.createUserno <> ? `;
+      WHERE groupCode = ? and a.createUserno <> ? `;
     values = [req.params.pointCode, req.session.userId];
     let check = await query (sql, values);
     if (check.length == 1){
-      let sql = `UPDATE reward_point.group SET groupUserno=?,groupUser=?, groupCode=?,modifyUserno=?,modifyUser=? where groupSeq=?`;
-      values = [req.session.userId, req.session.displayName, null, req.session.userId, req.session.displayName, check[0].groupSeq];
+      sql = `DELETE FROM reward_point.point WHERE pointUserno = ?`;
+      values = [req.session.userId];
       let check2 = await query (sql, values);
       if (check2){
-        return check[0];
+        sql = `UPDATE reward_point.group SET groupUserno=?,groupUser=?, groupCode=?,modifyUserno=?,modifyUser=? WHERE groupSeq=?`;
+        values = [req.session.userId, req.session.displayName, null, req.session.userId, req.session.displayName, check[0].groupSeq];
+        check2 = await query (sql, values);
+        if (check2){
+          return check[0];
+        }
       }
     } 
     return null;
@@ -236,23 +304,30 @@ exports.joinGroup = async(req, res) => {
 /** 產生點數 代碼 */
 exports.createPoint = async(req, res) => {
   try {
-    sql = 'INSERT INTO reward_point.point SET ?';
-    values = {
-      cardSeq: req.body.cardSeq,
-      pointNum: req.body.pointNum,
-      pointCode: req.body.pointCode,
-      status: 'w',
-      createUserno: req.session.userId,
-      createUser: req.session.displayName,
-      modifyUserno: req.session.userId,
-      modifyUser: req.session.displayName,
-    };
-    check = await query (sql, values);
-    if (check){
-      return true;
-    } else {
-      return false;
+    let sql = `SELECT distinct  a.cardSeq,a.cardName,a.cardNum,a.cardExp,a.cardGift 
+    FROM reward_point.card as a 
+    left join reward_point.group as b on a.cardSeq=b.cardSeq    
+    WHERE a.createUserno=? or b.groupUserno=?`;
+    let values = [req.session.userId, req.session.userId];
+    let check = await query (sql, values);
+    if (check.length > 0){
+      sql = 'INSERT INTO reward_point.point SET ?';
+      values = {
+        cardSeq: req.body.cardSeq,
+        pointNum: req.body.pointNum,
+        pointCode: req.body.pointCode,
+        status: 'w',
+        createUserno: req.session.userId,
+        createUser: req.session.displayName,
+        modifyUserno: req.session.userId,
+        modifyUser: req.session.displayName,
+      };
+      check = await query (sql, values);
+      if (check){
+        return true;
+      }
     }
+    return false;
   } catch (e){
     return false;
   }
@@ -261,19 +336,27 @@ exports.createPoint = async(req, res) => {
 /** 接收點數 代碼 */
 exports.getPoint = async(req, res) => {
   try {
-    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum,a.createUserno FROM reward_point.point as a 
-      left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where pointCode = ? and status = ? and a.createUserno <> ? `;
-    values = [req.params.pointCode, 'w', req.session.userId];
+    let sql = `SELECT distinct  a.cardSeq,a.cardName,a.cardNum,a.cardExp,a.cardGift 
+    FROM reward_point.card as a 
+    left join reward_point.group as b on a.cardSeq=b.cardSeq    
+    WHERE a.createUserno=? or b.groupUserno=?`;
+    let values = [req.session.userId, req.session.userId];
     let check = await query (sql, values);
-    if (check.length == 1){
-      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
-      values = [req.session.userId, 'e', null, req.session.userId, req.session.displayName, check[0].pointSeq];
-      let check2 = await query (sql, values);
-      if (check2){
-        return check[0];
-      }
-    } 
+    if (check.length == 0){
+      let sql = `SELECT a.pointSeq,b.cardName,a.pointNum,a.createUserno FROM reward_point.point as a 
+        left join reward_point.card as b on a.cardSeq=b.cardSeq  
+        WHERE pointCode = ? and status = ? and a.createUserno <> ? `;
+      values = [req.params.pointCode, 'w', req.session.userId];
+      let check = await query (sql, values);
+      if (check.length == 1){
+        let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? WHERE pointSeq=?`;
+        values = [req.session.userId, 'e', null, req.session.userId, req.session.displayName, check[0].pointSeq];
+        let check2 = await query (sql, values);
+        if (check2){
+          return check[0];
+        }
+      } 
+    }
     return null;
 
   } catch (e){
@@ -381,19 +464,27 @@ exports.sharePoint = async(req, res) => {
 /** 接收轉送點數 代碼 */
 exports.getSharePoint = async(req, res) => {
   try {
-    let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
-      left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where pointCode = ? and status = ? and a.createUserno <> ? `;
-    values = [req.params.pointCode, 'g', req.session.userId];
+    let sql = `SELECT distinct  a.cardSeq,a.cardName,a.cardNum,a.cardExp,a.cardGift 
+    FROM reward_point.card as a 
+    left join reward_point.group as b on a.cardSeq=b.cardSeq    
+    WHERE a.createUserno=? or b.groupUserno=?`;
+    let values = [req.session.userId, req.session.userId];
     let check = await query (sql, values);
-    if (check.length == 1){
-      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
-      values = [req.session.userId, 'm', null, req.session.userId, req.session.displayName, check[0].pointSeq];
-      let check2 = await query (sql, values);
-      if (check2){
-        return check[0];
-      }
-    } 
+    if (check.length == 0){
+      let sql = `SELECT a.pointSeq,b.cardName,a.pointNum FROM reward_point.point as a 
+      left join reward_point.card as b on a.cardSeq=b.cardSeq  
+      WHERE pointCode = ? and status = ? and a.createUserno <> ? `;
+      values = [req.params.pointCode, 'g', req.session.userId];
+      let check = await query (sql, values);
+      if (check.length == 1){
+        let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? WHERE pointSeq=?`;
+        values = [req.session.userId, 'm', null, req.session.userId, req.session.displayName, check[0].pointSeq];
+        let check2 = await query (sql, values);
+        if (check2){
+          return check[0];
+        }
+      } 
+    }
     return null;
 
   } catch (e){
@@ -406,7 +497,7 @@ exports.getSharePoint = async(req, res) => {
 exports.pointDetail = async(req, res) => {
   try {
     let sql = `SELECT  pointNum,pointUserno,status,createUserno,modifydate,createdate FROM reward_point.point 
-    where cardSeq= ?
+    WHERE cardSeq= ?
     and ((pointUserno = ? and status in('e','m')) 
     or (createUserno = ? and status in('g','m','u','r'))) ; `;
     values = [req.body.cardSeq, req.session.userId, req.session.userId];
@@ -509,12 +600,12 @@ exports.sendWard = async(req, res) => {
   try {
     let sql = `SELECT a.pointSeq,b.cardName,b.createUserno,a.pointNum FROM reward_point.point as a 
       left join reward_point.card as b on a.cardSeq=b.cardSeq  
-      where pointCode = ? and status = ?  and b.createUserno =  ?`;
+      WHERE pointCode = ? and status = ?  and b.createUserno =  ?`;
     values = [req.params.pointCode, 'r', req.session.userId];
     let check = await query (sql, values);
     if (check.length == 1){
 
-      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? where pointSeq=?`;
+      let sql = `UPDATE reward_point.point SET pointUserno=?,status=? , pointCode=?,modifyUserno=?,modifyUser=? WHERE pointSeq=?`;
       values = [req.session.userId, 'u', null, req.session.userId, req.session.displayName, check[0].pointSeq];
       let check2 = await query (sql, values);
       if (check2){
@@ -529,11 +620,11 @@ exports.sendWard = async(req, res) => {
 };
 
 
-/** 刪除轉送 */
+/** 刪除轉送中 兌換中 送點中 */
 exports.delShare = async(req, res) => {
   try {
     let sql = `DELETE FROM reward_point.point WHERE  (cardSeq=?  and createUserno=? ) and (status = ? or status =?)`;
-    values = [req.body.cardSeq, req.session.userId, 'g', 'r'];
+    values = [req.body.cardSeq, req.session.userId, 'g', 'r', 'w'];
     let check = await query (sql, values);
     if (check){
       return true;

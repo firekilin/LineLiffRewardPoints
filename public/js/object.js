@@ -157,6 +157,84 @@ class checkRequire{
   };
 }
 
+
+//新增工作人員訊息
+let sendGroup = (json) => {
+  if (liff.isApiAvailable ('shareTargetPicker')) {
+    liff.shareTargetPicker ([{
+      'type': 'flex',
+      'altText': '冰塊 集點站 員工加入',
+      'contents':
+
+      {
+        'type': 'bubble',
+        'body': {
+          'type': 'box',
+          'layout': 'vertical',
+          'contents': [
+            {
+              'type': 'text',
+              'text': '冰塊 集點站',
+              'weight': 'bold',
+              'size': 'xxl',
+              'margin': 'md',
+              'align': 'center'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'text',
+              'text': json.cardName,
+              'align': 'center',
+              'margin': 'md',
+              'size': 'xl'
+            },
+            {
+              'type': 'text',
+              'text': '成為發點數人員',
+              'align': 'center',
+              'size': 'xl',
+              'margin': 'md',
+              'color': '#000000'
+            },
+            {
+              'type': 'text',
+              'text': '將會清除您此卡所有點數',
+              'align': 'center',
+              'size': 'xl',
+              'margin': 'md',
+              'color': '#FF0000'
+            },
+            { 'type': 'separator',
+              'margin': 'xxl' },
+            {
+              'type': 'box',
+              'layout': 'horizontal',
+              'margin': 'md',
+              'contents': [
+                { 'type': 'button',
+                  'action': {
+                    'type': 'uri',
+                    'label': '加入',
+                    'uri': json.url
+                  } }
+              ],
+              'borderColor': '#0080FF',
+              'borderWidth': '1px',
+              'cornerRadius': '50px'
+            }
+          ]
+        },
+        'styles': { 'footer': { 'separator': true } }
+      }
+          
+    }]);
+  } else {
+    alertModal.setBodyText ('未允許此程式使用分享功能');
+    alertModal.show ();
+  }
+};
+
 //送點數訊息
 let sharePoint = (point) => {
   if (liff.isApiAvailable ('shareTargetPicker')) {

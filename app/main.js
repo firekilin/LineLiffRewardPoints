@@ -3,11 +3,7 @@ const points = require ('../dao/RewardPoints/index');
 const config = require ('config');
 const axios = require ('axios');
 const utils = require ('./utils');
-
-
-
 const liffId = config.get ('line.liffId');
-
 
 //api liffId get
 router.get ('/send-id', async(req, res) => {
@@ -43,7 +39,6 @@ router.post ('/login', async(req, res) => {
 
 });
 
-
 //登入Line頁面 (首頁)
 router.get ('/', async(req, res) => {
   res.render ('index');
@@ -58,13 +53,11 @@ router.get ('/create', async(req, res) => {
   }
 });
 
-
 //管理集點卡
 router.get ('/manage/:id', async(req, res) => {
   const id = req.params.id;
   res.render ('edit', { id: id });
 });
-
 
 //收點 掃描操作
 router.get ('/getPoint/:getPoint', async(req, res) => {
@@ -80,8 +73,6 @@ router.get ('/getSharePoint/:getPoint', async(req, res) => {
 
 });
 
-
-
 //查看集點卡(使用者)
 router.get ('/pointList', async(req, res) => {
   res.render ('pointList');
@@ -96,12 +87,10 @@ router.get ('/sendWard/:getWard', async(req, res) => {
 });
 
 
-
 //加入人員 掃描操作
 router.get ('/addGroup/:getPoint', async(req, res) => {
   const getPoint = req.params.getPoint;
   res.render ('addGroup', { getPoint: getPoint });
-
 });
 
 

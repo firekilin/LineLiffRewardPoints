@@ -42,10 +42,20 @@ router.get ('/manageCardList', async(req, res) => {
 //取得發點數人員清單
 router.post ('/groupList', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
-    res.send (utils.response ( await points.groupList (req, res)));
-  }
-});
+    if (await points.isCardBuilder (req, res)){
+      let json = await points.groupList (req, res);
+      for (let i = 0;i < json.length;i ++){
+        json[i].url = 'https://liff.line.me/1656461762-Gq9B5Oz9/addGroup/' + json[i].groupCode;
+      }
 
+
+      res.send (utils.response (json ));
+    } else {
+      res.send (utils.response ('無權限', '0004'));
+    }
+  }
+
+});
 
 //新增發點數人員QRCode
 router.post ('/addGroup', async(req, res) => {
@@ -80,6 +90,22 @@ router.get ('/joinGroup/:pointCode', async(req, res) => {
     res.send (utils.response ('連結失效，無法加入', '0004'));
   }});
 
+//人員刪除
+router.post ('/deleteGroup', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    if (await points.isCardBuilder (req, res)){
+      if (await points.deleteGroup (req, res)){
+        res.send (utils.response ('成功'));
+      } else {
+        res.send (utils.response ('刪除失敗', '0004'));
+      }
+    } else {
+      res.send (utils.response ('無權限', '0004'));
+
+    }
+  }
+});
+
 //取得卡片詳細
 router.post ('/showCard', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
@@ -92,6 +118,11 @@ router.post ('/showCard', async(req, res) => {
     json.pointImage = pointImgsTemp;
     json.getWardImage = utils.bufferToBase64 (json.getWardImage);
 
+    if (await points.isCardBuilder (req, res)){
+      json.sendPoint = await points.builderHistroy (req, res);
+    } else {
+      json.sendPoint = await points.managerHistroy (req, res);
+    }
 
     if (json != null){
       res.send (utils.response (json ));
@@ -100,7 +131,6 @@ router.post ('/showCard', async(req, res) => {
     }
   }
 });
-
 
 //送點 QRCode
 router.post ('/sendPoint', async(req, res) => {
@@ -126,7 +156,6 @@ router.post ('/sendPoint', async(req, res) => {
 
 //收點 掃描操作
 router.get ('/getPoint/:pointCode', async(req, res) => {
-
   let json = await points.getPoint (req, res);
   if (json != null){
     res.send (utils.response (json ));

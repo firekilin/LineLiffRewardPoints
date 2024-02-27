@@ -64,60 +64,108 @@ let showGroupList = (id) => {
       contentType: 'application/json;charset=utf-8',          
       data: JSON.stringify ({ cardSeq: id }),
       success: async (json) => {
-        let addGroup = $ ('<a class="btn btn-success mb-3">').text ('新增人員');
-        addGroup.on ('click', () => {
-          $.ajax (
-            {
-              url: '/api/addGroup',
-              method: 'POST',
-              dataType: 'json',
-              contentType: 'application/json;charset=utf-8',          
-              data: JSON.stringify ({ cardSeq: id }),
-              success: async (json) => {
-                if (json.code == '0000'){
-                  let img = await base64ToImage (json.data.img);
-                  alertModal.getBody ().empty ();
-                  alertModal.getBody ().append (img);
-                  alertModal.getFooter ().empty ();
-                  alertModal.getFooter ().append (alertModal.getCloseBtn ());
-                  
-                  //分享
-                  let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
-                  share.on ('click', () => {
-                    sharePoint (json.data);
-                  });
-                  alertModal.getFooter ().append (share);
-                  alertModal.show ();
-                  
-                } else {
-                  alertModal.setBodyText (json.data);
-                  alertModal.show ();
-                }
-              }, error: (error) => {
-                console.log (error);
-        
-              } 
-            });
-        });
-        $ ('#groupList').append (addGroup);
-
-        let groupThead = $ (`<thead>
-                            <tr>
-                              <th scope="col">刪除</th>
-                              <th scope="col">人員名稱</th>
-                            </tr>
-                          </thead>`);
-        let groupTable = $ ('<table class="table  table-striped">');
-        groupTable.append (groupThead);
-        let groupTbody = $ ('<tbody>');
-        for (let i = 0;i < json.data.length;i ++){
-          let tableTr = $ ('<tr>');
-          tableTr.append ($ ('<td>').text (json.data.groupUser));
-          groupTbody.append (tableTr);
-        }
-        groupTable.append (groupTbody);
-        $ ('#groupList').append (groupTable);
+        if (json.code == '0000'){
+          let addGroup = $ ('<a class="btn btn-success mb-3">').text ('新增人員');
+          addGroup.on ('click', () => {
+            $.ajax (
+              {
+                url: '/api/addGroup',
+                method: 'POST',
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',          
+                data: JSON.stringify ({ cardSeq: id }),
+                success: async (json) => {
+                  if (json.code == '0000'){
+                    let img = await base64ToImage (json.data.img);
+                    alertModal.getBody ().empty ();
+                    alertModal.getBody ().append (img);
+                    alertModal.getFooter ().empty ();
+                    alertModal.getFooter ().append (alertModal.getCloseBtn ());
+                    
+                    //分享
+                    let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
+                    share.on ('click', () => {
+                      sharePoint (json.data);
+                    });
+                    alertModal.getFooter ().append (share);
+                    alertModal.show ();
+                    
+                  } else {
+                    alertModal.setBodyText (json.data);
+                    alertModal.show ();
+                  }
+                }, error: (error) => {
+                  console.log (error);
+          
+                } 
+              });
+          });
+          $ ('#groupList').append (addGroup);
   
+          let groupThead = $ (`<thead>
+                              <tr>
+                                <th scope="col">刪除</th>
+                                <th scope="col">人員名稱</th>
+                              </tr>
+                            </thead>`);
+          let groupTable = $ ('<table class="table  table-striped">');
+          groupTable.append (groupThead);
+          let groupTbody = $ ('<tbody>');
+          for (let i = 0;i < json.data.length;i ++){
+            let deletebtn = $ (`<button type="button" class="btn btn-danger" data-bs-dismiss="modal">刪除</button>`);
+            deletebtn.on ('click', () => {
+              $.ajax (
+                {
+                  url: '/api/deleteGroup',
+                  method: 'POST',
+                  dataType: 'json',
+                  contentType: 'application/json;charset=utf-8',          
+                  data: JSON.stringify ({ cardSeq: id, groupSeq: json.data[i].groupSeq }),
+                  success: async (json) => {
+                    if (json.code == '0000'){
+                      alertModal.setHeaderText ('通知');
+                      alertModal.setBodyText ('完成');
+                      alertModal.getFooter ().empty ();
+                      $ (alertModal.getCloseBtn ()).on ('click', () => {
+                        window.location.reload ();
+                      });
+                      alertModal.getFooter ().append (alertModal.getCloseBtn ());
+                      alertModal.show ();
+                    } else {
+                      alertModal.setHeaderText ('通知');
+                      alertModal.setBodyText (json.data);
+                      alertModal.getFooter ().empty ();
+                      $ (alertModal.getCloseBtn ()).on ('click', () => {
+                        window.location.reload ();
+                      });
+                      alertModal.getFooter ().append (alertModal.getCloseBtn ());
+                      alertModal.show ();
+                    }
+                  }, error: (error) => {
+                    console.log (error);
+                  } 
+                });
+            });
+            let tableTr = $ ('<tr>');
+            tableTr.append ($ ('<td>').append (deletebtn));
+            if (json.data[i].groupCode != null){
+              //分享
+              let share = $ ('<button type="button" class="btn btn-success" data-bs-dismiss="modal">LINE分享</button>');
+              share.on ('click', () => {
+                sharePoint (json.data[i]);
+              });
+              tableTr.append ($ ('<td>').append (share));
+
+            } else {
+              tableTr.append ($ ('<td>').text (json.data[i].groupUser));
+            }
+            groupTbody.append (tableTr);
+          }
+          groupTable.append (groupTbody);
+          $ ('#groupList').append (groupTable);
+    
+        }
+       
       }, error: (error) => {
         console.log (error);
 
