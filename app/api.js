@@ -44,11 +44,11 @@ router.post ('/groupList', async(req, res) => {
   if (utils.checkAuthApi (req, res)){
     if (await points.isCardBuilder (req, res)){
       let json = await points.groupList (req, res);
-      for (let i = 0;i < json.length;i ++){
-        json[i].url = 'https://liff.line.me/1656461762-Gq9B5Oz9/addGroup/' + json[i].groupCode;
+      if (json != null){
+        for (let i = 0;i < json.length;i ++){
+          json[i].url = 'https://liff.line.me/1656461762-Gq9B5Oz9/addGroup/' + json[i].groupCode;
+        }
       }
-
-
       res.send (utils.response (json ));
     } else {
       res.send (utils.response ('無權限', '0004'));
@@ -273,6 +273,23 @@ router.post ('/delShare', async(req, res) => {
   }
 });
 
+
+//移除卡片有所資訊
+router.post ('/delCard', async(req, res) => {
+  if (utils.checkAuthApi (req, res)){
+    if (await points.isCardBuilder (req, res)){
+      let check = await points.delCard (req, res);
+      if (check){
+        res.send (utils.response ('完成'));
+      } else {
+        res.send (utils.response ('移除失敗', '0004'));
+  
+      }
+    }
+   
+   
+  }
+});
 
 
 

@@ -65,7 +65,8 @@ let showGroupList = (id) => {
       data: JSON.stringify ({ cardSeq: id }),
       success: async (json) => {
         if (json.code == '0000'){
-          let addGroup = $ ('<a class="btn btn-success mb-3">').text ('新增人員');
+          let flexdiv = $ ('<div class="d-flex">');
+          let addGroup = $ ('<a class="btn btn-success m-3 mb-3">').text ('新增人員');
           addGroup.on ('click', () => {
             $.ajax (
               {
@@ -100,8 +101,44 @@ let showGroupList = (id) => {
                 } 
               });
           });
-          $ ('#groupList').append (addGroup);
-  
+          flexdiv.append (addGroup);
+          let delCard = $ ('<a class="btn btn-danger m-3 mb-3 ms-auto">').text ('刪除卡片');
+          delCard.on ('click', () => {
+            alertModal.setHeaderText ('通知');
+            alertModal.setBodyText ('是否完全刪除卡片');
+            alertModal.getFooter ().empty ();
+            $ (alertModal.getCloseBtn ()).on ('click', () => {
+              window.location.reload ();
+            });
+            alertModal.getFooter ().append (alertModal.getCloseBtn ());
+            let justDoIt = $ ('<a class="btn btn-danger">').text ('刪除一切');
+            justDoIt.on ('click', () => {
+              $.ajax (
+                {
+                  url: '/api/delCard',
+                  method: 'POST',
+                  dataType: 'json',
+                  contentType: 'application/json;charset=utf-8',          
+                  data: JSON.stringify ({ cardSeq: id }),
+                  success: async (json) => {
+                    if (json.code == '0000'){
+                      window.location = '/';
+                    } else {
+                      window.location = '/';
+                    }
+                  }, error: (error) => {
+                    console.log (error);
+            
+                  } 
+                });
+            });
+            alertModal.getFooter ().append (justDoIt);
+            alertModal.show ();
+           
+          });
+          flexdiv.append (delCard);
+          $ ('#groupList').append (flexdiv);
+
           let groupThead = $ (`<thead>
                               <tr>
                                 <th scope="col">刪除</th>
