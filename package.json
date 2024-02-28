@@ -43,6 +43,7 @@
     "jquery-ui-bundle": "^1.12.1-migrate",
     "js-yaml": "^4.1.0",
     "mysql": "^2.18.1",
+    "pngjs": "^7.0.0",
     "qrcode": "^1.5.3"
   },
   "devDependencies": {
