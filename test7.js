@@ -1,5 +1,5 @@
 const fs = require ('fs');
-const { cunk, pngToApng } = require ('./utils');
+const { cunk, pngToApngRGB } = require ('./utils');
 
 let run = async() => {
   let images = ['1.png', '2.png'];
@@ -116,12 +116,12 @@ let run = async() => {
     bodyBuffer.push (fcTLCunk.getBuffer ());
     if (i == 0){
 
-      let IDAT = new cunk ('IDAT', await pngToApng (imagesBuffer[i]));
+      let IDAT = new cunk ('IDAT', await pngToApngRGB (imagesBuffer[i]));
       bodyBuffer.push (IDAT.getBuffer ());
     } else {
       let fdAT = Buffer.alloc (imagesBuffer[i].length + 4);
       fdAT.writeUInt32BE (sequenceNumber, 0);
-      let imgTemp = await pngToApng (imagesBuffer[i]);
+      let imgTemp = await pngToApngRGB (imagesBuffer[i]);
       imgTemp.copy (fdAT, 4);
       let fdATCunk = new cunk ('fdAT', fdAT);
       bodyBuffer.push (fdATCunk.getBuffer ());

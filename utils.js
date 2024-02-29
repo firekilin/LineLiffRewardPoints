@@ -65,7 +65,7 @@ let pngToApngRGB = (file) => {
           const rowData = pngBuffer.slice (startIndex, startIndex + bytesPerRow);
           // 行首的 '00'  使用原始RGB 方式 #ffffffff
           let test = Buffer.alloc (1);
-          test.writeUInt8 (0, 0);
+          test.writeUInt8 (3, 0);
           modifiedData.push (test);
           // 添加原始資料 #ffffffff
           modifiedData.push (rowData);
